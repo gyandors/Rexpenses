@@ -1,13 +1,20 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 // import Modal from '../UI/Modal';
 
-/* eslint-disable react/no-unescaped-entities */
+import AuthContext from '../../context/AuthContext';
+
 export default function AuthForm() {
   const [haveAccount, setHaveAccount] = useState(true);
 
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
+
+  const authCtx = useContext(AuthContext);
+
+  const history = useHistory();
 
   function handleFormSubmit(event) {
     event.preventDefault();
@@ -16,8 +23,23 @@ export default function AuthForm() {
     const password = passwordRef.current.value;
 
     if (haveAccount) {
-      //
-      console.log('Login');
+      axios
+        .post(
+          'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+          {
+            email: email,
+            password: password,
+            returnSecureToken: true,
+          }
+        )
+        .then((response) => {
+          authCtx.login(response.data.idToken);
+          history.replace('/profile');
+        })
+        .catch((error) => {
+          console.log(error.response.data.error.message);
+          alert(error.response.data.error.message);
+        });
     } else {
       const confirmPassword = confirmPasswordRef.current.value;
       if (password !== confirmPassword) {
@@ -57,7 +79,7 @@ export default function AuthForm() {
   }
 
   return (
-    <div className=" border flex min-h-full flex-col justify-center w-96 m-auto p-2 lg:px-8">
+    <div className="border rounded-xl shadow-[0px_0px_15px_2px_rgba(0,0,0,0.2)]  flex min-h-full flex-col justify-center w-96 m-auto p-2 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           {haveAccount ? 'Sign in to your account' : 'Create new account'}
@@ -83,12 +105,24 @@ export default function AuthForm() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Password
-            </label>
+            <div className=" flex justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Password
+              </label>
+              {haveAccount && (
+                <div className="text-sm">
+                  <a
+                    href="#"
+                    className="font-semibold text-indigo-600 hover:text-indigo-500"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              )}
+            </div>
 
             <input
               className="mt-2 p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"

@@ -1,19 +1,29 @@
-import { Route, Switch } from 'react-router-dom';
+import { useContext } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
+
+import AuthContext from './context/AuthContext';
 
 import Header from './components/Header/Header';
-import AuthPage from './components/pages/AuthPage';
-import NotFoundPage from './components/pages/NotFoundPage';
+import AuthPage from './pages/AuthPage';
+import ProfilePage from './pages/ProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
 // import Modal from './components/UI/Modal';
 
 export default function App() {
+  const authCtx = useContext(AuthContext);
+
   return (
     <>
       <Header />
       <Switch>
         {/* <Route path="/"><Modal /></Route> */}
 
+        <Route path="/profile">
+          {authCtx.loggedIn ? <ProfilePage /> : <Redirect to="/auth" />}
+        </Route>
+
         <Route path="/auth">
-          <AuthPage />
+          {authCtx.loggedIn ? <Redirect to="/profile" /> : <AuthPage />}
         </Route>
 
         <Route>
