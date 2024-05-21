@@ -21,11 +21,19 @@ export function AuthContextProvider({ children }) {
     localStorage.setItem('displayName', displayName);
   }
 
+  function handleLogout() {
+    setDisplayName(null);
+    setIdToken(null);
+    localStorage.removeItem('idToken');
+    localStorage.removeItem('displayName');
+  }
+
   const authCtxValue = {
     displayName: displayName,
     idToken: idToken,
     loggedIn: loggedIn,
     login: handleLogin,
+    logout: handleLogout,
   };
 
   return (
