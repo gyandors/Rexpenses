@@ -1,5 +1,5 @@
 import { useState, useRef, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 // import Modal from '../UI/Modal';
 
@@ -121,12 +121,12 @@ export default function AuthForm() {
               </label>
               {haveAccount && (
                 <div className="text-sm">
-                  <a
-                    href="#"
+                  <Link
+                    to="/forgot-password"
                     className="font-semibold text-indigo-600 hover:text-indigo-500"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
@@ -145,7 +145,7 @@ export default function AuthForm() {
                 htmlFor="confm-password"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Confirm Password
+                Confirm password
               </label>
 
               <input
