@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef, useContext, useEffect, useCallback } from 'react';
+import { useRef, useContext, useEffect, useCallback, useState } from 'react';
 
 import axios from 'axios';
 
@@ -11,25 +11,33 @@ export default function ProfileForm(props) {
 
   const authCtx = useContext(AuthContext);
 
+  const [editing, setEditing] = useState(false);
+
   function handleFormSubmit(event) {
     event.preventDefault();
 
-    axios
-      .post(
-        'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
-        {
-          idToken: authCtx.token,
-          displayName: nameRef.current.value,
-          photoUrl: photoRef.current.value,
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        props.onCloseForm();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    setEditing(true);
+
+    if (editing) {
+      console.log('editing');
+      axios
+        .post(
+          'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+          {
+            idToken: authCtx.idToken,
+            displayName: nameRef.current.value,
+            photoUrl: photoRef.current.value,
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          // props.onCloseForm();
+          setEditing(false);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 
   const fetchData = useCallback(async () => {
@@ -38,7 +46,7 @@ export default function ProfileForm(props) {
         'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
         {
           method: 'POST',
-          body: JSON.stringify({ idToken: authCtx.token }),
+          body: JSON.stringify({ idToken: authCtx.idToken }),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -46,6 +54,8 @@ export default function ProfileForm(props) {
       );
 
       const data = await response.json();
+      console.log(response);
+      console.log(data);
 
       if (response.ok) {
         if (data.users[0].displayName) {
@@ -64,26 +74,63 @@ export default function ProfileForm(props) {
     } catch (error) {
       alert(error.message);
     }
-  }, [authCtx.token]);
+  }, [authCtx.idToken]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   return (
-    <form onSubmit={handleFormSubmit}>
-      <h1>Update Profile</h1>
+    <form
+      className=" flex flex-col gap-4 max-w-96 m-auto mt-4 p-2 border-2"
+      onSubmit={handleFormSubmit}
+    >
+      <h1 className=" text-xl font-bold">Update Profile</h1>
 
-      <label htmlFor="name">Full Name:</label>
-      <input type="text" id="name" ref={nameRef} />
+      <div className=" mb-2">
+        <label className=" block text-sm font-semibold" htmlFor="name">
+          Full Name:
+        </label>
+        <input
+          className="border rounded border-indigo-700 p-[3px] mt-1 w-full"
+          type="text"
+          id="name"
+          ref={nameRef}
+          disabled={!editing}
+        />
+      </div>
 
-      <label htmlFor="photo">Profile Photo URL:</label>
-      <input type="url" id="photo" ref={photoRef} />
+      <div className=" mb-2">
+        <label className=" block text-sm font-semibold" htmlFor="photo">
+          Profile Photo URL:
+        </label>
+        <input
+          className="border rounded border-indigo-700 p-[3px] mt-1 w-full"
+          type="url"
+          id="photo"
+          ref={photoRef}
+          disabled={!editing}
+        />
+      </div>
 
-      <button type="submit">Update</button>
-      <button type="cancel" onClick={() => props.onCloseForm()}>
-        Cancel
-      </button>
+      <div>
+        <button className="border px-[5px] py-[2px]" type="submit">
+          {!editing ? 'Edit' : 'Update'}
+        </button>
+
+        {editing && (
+          <button
+            className=" ml-[5px] border px-[5px] py-[2px]"
+            type="cancel"
+            onClick={() => {
+              setEditing(false);
+              props.onCloseForm();
+            }}
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

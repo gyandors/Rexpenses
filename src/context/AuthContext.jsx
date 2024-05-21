@@ -6,17 +6,24 @@ const AuthContext = createContext();
 export default AuthContext;
 
 export function AuthContextProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [idToken, setIdToken] = useState(localStorage.getItem('idToken'));
 
-  const loggedIn = !!token;
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem('displayName')
+  );
 
-  function handleLogin(token) {
-    setToken(token);
-    localStorage.setItem('token', token);
+  const loggedIn = !!idToken;
+
+  function handleLogin(idToken, displayName) {
+    setDisplayName(displayName);
+    setIdToken(idToken);
+    localStorage.setItem('idToken', idToken);
+    localStorage.setItem('displayName', displayName);
   }
 
   const authCtxValue = {
-    token: token,
+    displayName: displayName,
+    idToken: idToken,
     loggedIn: loggedIn,
     login: handleLogin,
   };

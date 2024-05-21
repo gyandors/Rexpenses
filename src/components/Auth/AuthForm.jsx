@@ -33,7 +33,8 @@ export default function AuthForm() {
           }
         )
         .then((response) => {
-          authCtx.login(response.data.idToken);
+          authCtx.login(response.data.idToken, response.data.displayName);
+          console.log(response.data);
           history.replace('/profile');
         })
         .catch((error) => {
@@ -67,7 +68,13 @@ export default function AuthForm() {
           const data = await response.json();
 
           if (response.ok) {
-            alert('Your account is successfully created');
+            alert(
+              'Your account is successfully created. Taking you to login page'
+            );
+            emailRef.current.value = '';
+            passwordRef.current.value = '';
+            confirmPasswordRef.current.value = '';
+            setHaveAccount(true);
           } else {
             throw new Error(data.error.message);
           }
@@ -79,14 +86,14 @@ export default function AuthForm() {
   }
 
   return (
-    <div className="border rounded-xl shadow-[0px_0px_15px_2px_rgba(0,0,0,0.2)]  flex min-h-full flex-col justify-center w-96 m-auto p-2 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="flex flex-col justify-center pt-8">
+      <div className="w-11/12 mt-10 mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           {haveAccount ? 'Sign in to your account' : 'Create new account'}
         </h2>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="w-11/12 mt-10 mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           <div>
             <label
@@ -108,7 +115,7 @@ export default function AuthForm() {
             <div className=" flex justify-between">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                className="block flex-grow text-sm font-medium leading-6 text-gray-900"
               >
                 Password
               </label>

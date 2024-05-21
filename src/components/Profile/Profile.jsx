@@ -1,20 +1,20 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import axios from 'axios';
 
 import ProfileForm from './ProfileForm';
+import AuthContext from '../../context/AuthContext';
 
 export default function Profile() {
   const [updateProfile, setUpdateProfile] = useState(false);
 
-  function handleCloseForm() {
-    setUpdateProfile(false);
-  }
+  const authCtx = useContext(AuthContext);
 
   return (
     <>
       <header>
-        <div>
-          <h1>Welcome to Expense Tracker</h1>
-          <div>
+        <div className="flex justify-between items-center bg-zinc-500 text-white p-4">
+          <h1>Welcome {authCtx.displayName}</h1>
+          <div className=" w-1/4 text-sm border rounded-3xl px-6 text-center">
             <i>
               {!updateProfile
                 ? 'Your profile is incomplete.'
@@ -28,7 +28,33 @@ export default function Profile() {
           </div>
         </div>
       </header>
-      {updateProfile && <ProfileForm onCloseForm={handleCloseForm} />}
+      <main className="mt-2">
+        <button
+          className="border px-[5px] py-[2px]"
+          onClick={() => {
+            console.log('click');
+            axios
+              .post(
+                'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+                {
+                  requestType: 'VERIFY_EMAIL',
+                  idToken: authCtx.idToken,
+                }
+              )
+              .then((response) => {
+                console.log(response);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }}
+        >
+          Verify email
+        </button>
+        {updateProfile && (
+          <ProfileForm onCloseForm={() => setUpdateProfile(false)} />
+        )}
+      </main>
     </>
   );
 }
