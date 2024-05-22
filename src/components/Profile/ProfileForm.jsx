@@ -13,33 +13,6 @@ export default function ProfileForm(props) {
 
   const [editing, setEditing] = useState(false);
 
-  function handleFormSubmit(event) {
-    event.preventDefault();
-
-    setEditing(true);
-
-    if (editing) {
-      console.log('editing');
-      axios
-        .post(
-          'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
-          {
-            idToken: authCtx.idToken,
-            displayName: nameRef.current.value,
-            photoUrl: photoRef.current.value,
-          }
-        )
-        .then((response) => {
-          console.log(response);
-          // props.onCloseForm();
-          setEditing(false);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }
-
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
@@ -54,8 +27,6 @@ export default function ProfileForm(props) {
       );
 
       const data = await response.json();
-      console.log(response);
-      console.log(data);
 
       if (response.ok) {
         if (data.users[0].displayName) {
@@ -79,6 +50,31 @@ export default function ProfileForm(props) {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  function handleFormSubmit(event) {
+    event.preventDefault();
+
+    setEditing(true);
+
+    if (editing) {
+      axios
+        .post(
+          'https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+          {
+            idToken: authCtx.idToken,
+            displayName: nameRef.current.value,
+            photoUrl: photoRef.current.value,
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          setEditing(false);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }
 
   return (
     <form

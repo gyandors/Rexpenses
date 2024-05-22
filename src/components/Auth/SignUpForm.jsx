@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import Modal from '../UI/Modal';
 import Loader from '../UI/Loader';
 
-export default function ForgotPasswordForm() {
+export default function SignUpForm() {
   const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
 
   const [showModal, setShowModal] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -13,17 +15,41 @@ export default function ForgotPasswordForm() {
   function handleFormSubmit(event) {
     event.preventDefault();
 
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+
+    if (!email || !password || !confirmPassword) {
+      setShowModal({
+        title: 'Invalid input',
+        message: 'Please fill the valid details.',
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setShowModal({
+        title: 'Invalid input',
+        message: 'Password did not match.',
+      });
+      return;
+    }
+
     (async function fetchData() {
       setLoader(true);
       try {
         const response = await fetch(
-          'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+          'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
           {
             method: 'POST',
             body: JSON.stringify({
-              requestType: 'PASSWORD_RESET',
-              email: emailRef.current.value,
+              email: email,
+              password: password,
+              returnSecureToken: true,
             }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
           }
         );
 
@@ -32,26 +58,29 @@ export default function ForgotPasswordForm() {
         if (response.ok) {
           setShowModal({
             title: 'Success',
-            message: 'Password recovery link is sent to your email.',
+            message: 'Your account is successfully created. Go to login page.',
           });
+
+          emailRef.current.value = '';
+          passwordRef.current.value = '';
+          confirmPasswordRef.current.value = '';
         } else {
           throw new Error(data.error.message);
         }
       } catch (error) {
         setShowModal({
-          title: 'Invalid',
+          // title: 'Error',
           message: error.message,
         });
       }
       setLoader(false);
     })();
   }
-
   return (
     <div className="flex flex-col justify-center pt-8">
       <div className="w-11/12 mt-10 mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Forgot Password
+          Create new account
         </h2>
       </div>
 
@@ -73,19 +102,50 @@ export default function ForgotPasswordForm() {
           </div>
 
           <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Password
+            </label>
+            <input
+              className="mt-2 p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              type="password"
+              id="password"
+              ref={passwordRef}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="confm-password"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Confirm password
+            </label>
+            <input
+              className="mt-2 p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              type="password"
+              id="confm-password"
+              ref={confirmPasswordRef}
+            />
+          </div>
+
+          <div>
             <button
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               type="submit"
             >
-              {loader ? <Loader /> : 'Send verification link'}
+              {loader ? <Loader /> : 'Sign up'}
             </button>
           </div>
         </form>
+
         <p className="mt-10 text-center text-sm text-gray-500">
-          Know your password?{' '}
+          Already have an account?{' '}
           <Link
+            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             to="/login"
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
           >
             Login here
           </Link>

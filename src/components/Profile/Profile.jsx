@@ -32,9 +32,8 @@ export default function Profile() {
       </header>
       <main className="mt-2">
         <button
-          className="border px-[5px] py-[2px]"
+          className="border text-white   rounded bg-cyan-900 hover:bg-cyan-700 px-[5px] py-[2px]"
           onClick={() => {
-            console.log('click');
             axios
               .post(
                 'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
@@ -43,12 +42,8 @@ export default function Profile() {
                   idToken: authCtx.idToken,
                 }
               )
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+              .then((response) => {})
+              .catch((error) => {});
           }}
         >
           Verify email

@@ -4,9 +4,10 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import AuthContext from './context/AuthContext';
 
 // import Header from './components/Header/Header';
-import AuthPage from './pages/AuthPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -21,18 +22,22 @@ export default function App() {
         </Route>
 
         <Route path="/profile">
-          {authCtx.loggedIn ? <ProfilePage /> : <Redirect to="/auth" />}
+          {authCtx.loggedIn ? <ProfilePage /> : <Redirect to="/login" />}
         </Route>
 
-        <Route path="/auth" exact>
-          {authCtx.loggedIn ? <Redirect to="/profile" /> : <AuthPage />}
+        <Route path="/login">
+          {!authCtx.loggedIn ? <LoginPage /> : <Redirect to="/profile" />}
+        </Route>
+
+        <Route path="/signup">
+          {!authCtx.loggedIn ? <SignUpPage /> : <Redirect to="/profile" />}
         </Route>
 
         <Route path="/forgot-password">
-          {authCtx.loggedIn ? (
-            <Redirect to="/profile" />
-          ) : (
+          {!authCtx.loggedIn ? (
             <ForgotPasswordPage />
+          ) : (
+            <Redirect to="/profile" />
           )}
         </Route>
 
