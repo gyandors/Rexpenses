@@ -13,7 +13,7 @@ export default function Profile() {
     <>
       <header>
         <div className="flex justify-between items-center bg-zinc-500 text-white p-4">
-          <h1>Welcome {authCtx.displayName}</h1>
+          <h1>Welcome</h1>
 
           <div className=" w-1/4 text-sm border rounded-3xl px-6 text-center">
             <i>
@@ -27,7 +27,6 @@ export default function Profile() {
               </button>
             )}
           </div>
-          <button onClick={() => authCtx.logout()}>Logout</button>
         </div>
       </header>
       <main className="mt-2">

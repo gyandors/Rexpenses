@@ -3,11 +3,12 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 
 import AuthContext from './context/AuthContext';
 
-// import Header from './components/Header/Header';
+import Header from './components/Header/Header';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ExpensesPage from './pages/ExpensesPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -15,7 +16,7 @@ export default function App() {
 
   return (
     <>
-      {/* <Header /> */}
+      <Header />
       <Switch>
         <Route path="/" exact>
           <Redirect to="/profile" />
@@ -23,6 +24,10 @@ export default function App() {
 
         <Route path="/profile">
           {authCtx.loggedIn ? <ProfilePage /> : <Redirect to="/login" />}
+        </Route>
+
+        <Route path="/expenses">
+          {authCtx.loggedIn ? <ExpensesPage /> : <Redirect to="/login" />}
         </Route>
 
         <Route path="/login">

@@ -2,7 +2,7 @@ import Navigation from './Navigation';
 
 export default function Header() {
   return (
-    <header className="mb-12">
+    <header className="h-[72px]">
       <Navigation />
     </header>
   );
