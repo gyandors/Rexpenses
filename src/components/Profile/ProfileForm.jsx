@@ -13,6 +13,8 @@ export default function ProfileForm(props) {
 
   const [editing, setEditing] = useState(false);
 
+  const [emailVerified, setEmailVerified] = useState(true);
+
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch(
@@ -27,6 +29,10 @@ export default function ProfileForm(props) {
       );
 
       const data = await response.json();
+      console.log(response);
+      console.log(data);
+
+      setEmailVerified(data.users[0].emailVerified);
 
       if (response.ok) {
         if (data.users[0].displayName) {
@@ -77,56 +83,77 @@ export default function ProfileForm(props) {
   }
 
   return (
-    <form
-      className=" flex flex-col gap-4 max-w-96 m-auto mt-4 p-2 border-2"
-      onSubmit={handleFormSubmit}
-    >
-      <h1 className=" text-xl font-bold">Update Profile</h1>
-
-      <div className=" mb-2">
-        <label className=" block text-sm font-semibold" htmlFor="name">
-          Full Name:
-        </label>
-        <input
-          className="border rounded border-indigo-700 p-[3px] mt-1 w-full"
-          type="text"
-          id="name"
-          ref={nameRef}
-          disabled={!editing}
-        />
-      </div>
-
-      <div className=" mb-2">
-        <label className=" block text-sm font-semibold" htmlFor="photo">
-          Profile Photo URL:
-        </label>
-        <input
-          className="border rounded border-indigo-700 p-[3px] mt-1 w-full"
-          type="url"
-          id="photo"
-          ref={photoRef}
-          disabled={!editing}
-        />
-      </div>
-
-      <div>
-        <button className="border px-[5px] py-[2px]" type="submit">
-          {!editing ? 'Edit' : 'Update'}
+    <>
+      {!emailVerified && (
+        <button
+          className="border text-white   rounded bg-cyan-900 hover:bg-cyan-700 px-[5px] py-[2px]"
+          onClick={() => {
+            axios
+              .post(
+                'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+                {
+                  requestType: 'VERIFY_EMAIL',
+                  idToken: authCtx.idToken,
+                }
+              )
+              .then((response) => {})
+              .catch((error) => {});
+          }}
+        >
+          Verify email
         </button>
+      )}
+      <form
+        className=" flex flex-col gap-4 max-w-96 m-auto mt-4 p-2 border-2"
+        onSubmit={handleFormSubmit}
+      >
+        <h1 className=" text-xl font-bold">Update Profile</h1>
 
-        {editing && (
-          <button
-            className=" ml-[5px] border px-[5px] py-[2px]"
-            type="cancel"
-            onClick={() => {
-              setEditing(false);
-              props.onCloseForm();
-            }}
-          >
-            Cancel
+        <div className=" mb-2">
+          <label className=" block text-sm font-semibold" htmlFor="name">
+            Full Name:
+          </label>
+          <input
+            className="border rounded border-indigo-700 p-[3px] mt-1 w-full"
+            type="text"
+            id="name"
+            ref={nameRef}
+            disabled={!editing}
+          />
+        </div>
+
+        <div className=" mb-2">
+          <label className=" block text-sm font-semibold" htmlFor="photo">
+            Profile Photo URL:
+          </label>
+          <input
+            className="border rounded border-indigo-700 p-[3px] mt-1 w-full"
+            type="url"
+            id="photo"
+            ref={photoRef}
+            disabled={!editing}
+          />
+        </div>
+
+        <div>
+          <button className="border px-[5px] py-[2px]" type="submit">
+            {!editing ? 'Edit' : 'Update'}
           </button>
-        )}
-      </div>
-    </form>
+
+          {editing && (
+            <button
+              className=" ml-[5px] border px-[5px] py-[2px]"
+              type="cancel"
+              onClick={() => {
+                setEditing(false);
+                props.onCloseForm();
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+    </>
   );
 }

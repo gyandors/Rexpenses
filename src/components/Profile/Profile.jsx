@@ -1,17 +1,13 @@
-import { useState, useContext } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 
 import ProfileForm from './ProfileForm';
-import AuthContext from '../../context/AuthContext';
 
 export default function Profile() {
   const [updateProfile, setUpdateProfile] = useState(false);
 
-  const authCtx = useContext(AuthContext);
-
   return (
     <>
-      <header>
+      <section>
         <div className="flex justify-between items-center bg-zinc-500 text-white p-4">
           <h1>Welcome</h1>
 
@@ -28,29 +24,12 @@ export default function Profile() {
             )}
           </div>
         </div>
-      </header>
-      <main className="mt-2">
-        <button
-          className="border text-white   rounded bg-cyan-900 hover:bg-cyan-700 px-[5px] py-[2px]"
-          onClick={() => {
-            axios
-              .post(
-                'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
-                {
-                  requestType: 'VERIFY_EMAIL',
-                  idToken: authCtx.idToken,
-                }
-              )
-              .then((response) => {})
-              .catch((error) => {});
-          }}
-        >
-          Verify email
-        </button>
+      </section>
+      <div className="mt-2">
         {updateProfile && (
           <ProfileForm onCloseForm={() => setUpdateProfile(false)} />
         )}
-      </main>
+      </div>
     </>
   );
 }

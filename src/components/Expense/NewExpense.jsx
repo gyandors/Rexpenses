@@ -9,12 +9,30 @@ export default function NewExpense(props) {
   function handleFormSubmit(event) {
     event.preventDefault();
 
-    props.onAddExpense({
-      id: Date.now(),
+    const newExpense = {
       amount: amountRef.current.value,
       description: descriptionRef.current.value,
       category: categoryRef.current.value,
-    });
+    };
+
+    async function fetchData() {
+      const response = await fetch(
+        'https://expense-tracker-17-default-rtdb.firebaseio.com/expenses.json',
+        {
+          method: 'POST',
+          body: JSON.stringify(newExpense),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        props.onAddExpense({ ...newExpense, id: data.name });
+      }
+    }
+    fetchData();
   }
 
   return (
@@ -77,7 +95,7 @@ export default function NewExpense(props) {
               </option>
               <option value="Food">Food</option>
               <option value="Fuel">Fuel</option>
-              <option value="Salary">Salary</option>
+              <option value="Loan">Loan</option>
               <option value="Education">Education</option>
             </select>
           </div>
