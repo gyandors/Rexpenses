@@ -58,7 +58,7 @@ export default function Navigation() {
         </button>
       </nav>
 
-      {/* Responsive Hidden Navbar */}
+      {/* Navbar for mobile screens */}
       <div
         className="hidden sm:hidden fixed top-0 w-full bg-gray-50 p-5 shadow-md"
         id="hidden"

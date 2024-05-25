@@ -8,10 +8,6 @@ export default AuthContext;
 export function AuthContextProvider({ children }) {
   const [idToken, setIdToken] = useState(localStorage.getItem('idToken'));
 
-  // const [displayName, setDisplayName] = useState(
-  //   localStorage.getItem('displayName')
-  // );
-
   const loggedIn = !!idToken;
 
   function handleLogin(idToken) {

@@ -1,22 +1,52 @@
 import { useEffect, useState } from 'react';
-import ExpenseItems from './ExpenseItems';
-import NewExpense from './NewExpense';
 
-const dummy_expenses = [];
+import ExpenseItems from './ExpenseItems';
+import ExpenseForm from './ExpenseForm';
+import DataLoader from '../UI/DataLoader';
+import Modal from '../UI/Modal';
 
 export default function Expense() {
-  const [expenses, setExpenses] = useState(dummy_expenses);
-
+  const [expenses, setExpenses] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
+  const [dataLoader, setDataLoader] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   function handleAddExpense(newExpense) {
-    console.log(newExpense);
     setExpenses((prevState) => [...prevState, newExpense]);
     setShowForm(false);
+    setShowModal({
+      title: 'Success',
+      message: 'Expense has been Added',
+    });
+  }
+
+  function handleEditExpense(editedExpense) {
+    const updatedExpenses = expenses.map((e) => {
+      if (e.id === editedExpense.id) {
+        return editedExpense;
+      }
+      return e;
+    });
+    setExpenses(updatedExpenses);
+    setShowModal({
+      title: 'Success',
+      message: 'Expense has been updated',
+    });
+  }
+
+  function handleDeleteExpense(delId) {
+    const updatedExpenses = expenses.filter((e) => e.id !== delId);
+    setExpenses(updatedExpenses);
+    setShowModal({
+      title: 'Success',
+      message: 'Expense has been deleted',
+    });
   }
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchExpenses() {
+      setDataLoader(true);
       const response = await fetch(
         'https://expense-tracker-17-default-rtdb.firebaseio.com/expenses.json'
       );
@@ -38,8 +68,9 @@ export default function Expense() {
       } else {
         alert('error');
       }
+      setDataLoader(false);
     }
-    fetchData();
+    fetchExpenses();
   }, []);
 
   return (
@@ -53,8 +84,8 @@ export default function Expense() {
         </button>
       )}
       {showForm && (
-        <NewExpense
-          onShowForm={() => setShowForm(false)}
+        <ExpenseForm
+          onCloseForm={() => setShowForm(false)}
           onAddExpense={handleAddExpense}
         />
       )}
@@ -67,10 +98,20 @@ export default function Expense() {
               amount={e.amount}
               description={e.description}
               category={e.category}
+              onEditExpense={handleEditExpense}
+              onDeleteExpense={handleDeleteExpense}
             />
           );
         })}
       </ul>
+      {dataLoader && <DataLoader />}
+      {showModal && (
+        <Modal
+          title={showModal.title}
+          message={showModal.message}
+          onClick={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }

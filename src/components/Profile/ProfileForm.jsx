@@ -29,12 +29,9 @@ export default function ProfileForm(props) {
       );
 
       const data = await response.json();
-      console.log(response);
-      console.log(data);
-
-      setEmailVerified(data.users[0].emailVerified);
-
       if (response.ok) {
+        setEmailVerified(data.users[0].emailVerified);
+
         if (data.users[0].displayName) {
           nameRef.current.value = data.users[0].displayName;
         } else {
@@ -88,16 +85,13 @@ export default function ProfileForm(props) {
         <button
           className="border text-white   rounded bg-cyan-900 hover:bg-cyan-700 px-[5px] py-[2px]"
           onClick={() => {
-            axios
-              .post(
-                'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
-                {
-                  requestType: 'VERIFY_EMAIL',
-                  idToken: authCtx.idToken,
-                }
-              )
-              .then((response) => {})
-              .catch((error) => {});
+            axios.post(
+              'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+              {
+                requestType: 'VERIFY_EMAIL',
+                idToken: authCtx.idToken,
+              }
+            );
           }}
         >
           Verify email

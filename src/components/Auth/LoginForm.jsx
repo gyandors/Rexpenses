@@ -43,7 +43,6 @@ export default function LoginForm() {
         }
       )
       .then((response) => {
-        // console.log(response);
         authCtx.login(response.data.idToken, response.data.displayName);
         history.replace('/profile');
       })
