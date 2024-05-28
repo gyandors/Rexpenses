@@ -1,7 +1,6 @@
-import { useContext } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
-import AuthContext from './context/AuthContext';
+import { useSelector } from 'react-redux';
 
 import Header from './components/Header/Header';
 import ProfilePage from './pages/ProfilePage';
@@ -12,7 +11,7 @@ import ExpensesPage from './pages/ExpensesPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
-  const authCtx = useContext(AuthContext);
+  const loggedIn = useSelector((state) => state.authState.loggedIn);
 
   return (
     <>
@@ -23,27 +22,23 @@ export default function App() {
         </Route>
 
         <Route path="/profile">
-          {authCtx.loggedIn ? <ProfilePage /> : <Redirect to="/login" />}
+          {loggedIn ? <ProfilePage /> : <Redirect to="/login" />}
         </Route>
 
         <Route path="/expenses">
-          {authCtx.loggedIn ? <ExpensesPage /> : <Redirect to="/login" />}
+          {loggedIn ? <ExpensesPage /> : <Redirect to="/login" />}
         </Route>
 
         <Route path="/login">
-          {!authCtx.loggedIn ? <LoginPage /> : <Redirect to="/profile" />}
+          {!loggedIn ? <LoginPage /> : <Redirect to="/profile" />}
         </Route>
 
         <Route path="/signup">
-          {!authCtx.loggedIn ? <SignUpPage /> : <Redirect to="/profile" />}
+          {!loggedIn ? <SignUpPage /> : <Redirect to="/profile" />}
         </Route>
 
         <Route path="/forgot-password">
-          {!authCtx.loggedIn ? (
-            <ForgotPasswordPage />
-          ) : (
-            <Redirect to="/profile" />
-          )}
+          {!loggedIn ? <ForgotPasswordPage /> : <Redirect to="/profile" />}
         </Route>
 
         <Route>

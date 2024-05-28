@@ -1,7 +1,12 @@
 /* eslint-disable react/prop-types */
 import { createContext, useState } from 'react';
 
-const AuthContext = createContext();
+const AuthContext = createContext({
+  idToken: null,
+  loggedIn: false,
+  login: () => {},
+  logout: () => {},
+});
 
 export default AuthContext;
 

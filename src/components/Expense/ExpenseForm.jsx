@@ -2,15 +2,15 @@
 import { useRef } from 'react';
 
 export default function ExpenseForm(props) {
-  const amountRef = useRef(props.amount);
-  const descriptionRef = useRef(props.description);
-  const categoryRef = useRef(props.category);
+  const amountRef = useRef();
+  const descriptionRef = useRef();
+  const categoryRef = useRef();
 
   function handleFormSubmit(event) {
     event.preventDefault();
 
     const newExpense = {
-      amount: amountRef.current.value,
+      amount: Number(amountRef.current.value),
       description: descriptionRef.current.value,
       category: categoryRef.current.value,
     };
@@ -36,6 +36,7 @@ export default function ExpenseForm(props) {
       const data = await response.json();
       if (response.ok) {
         props.onAddExpense({ ...newExpense, id: data.name });
+        props.onCloseForm();
       }
     }
 
@@ -65,7 +66,7 @@ export default function ExpenseForm(props) {
         </h2>
       </div>
 
-      <div className="w-11/12 mt-10 mb-10 mx-auto sm:max-w-sm">
+      <div className="w-11/12 mx-auto sm:max-w-sm">
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           <div>
             <label
@@ -79,7 +80,7 @@ export default function ExpenseForm(props) {
               type="number"
               id="price"
               placeholder="Enter amount"
-              defaultValue={amountRef.current}
+              defaultValue={props.amount}
               ref={amountRef}
             />
           </div>
@@ -96,7 +97,7 @@ export default function ExpenseForm(props) {
               type="text"
               id="description"
               placeholder="Enter description"
-              defaultValue={descriptionRef.current}
+              defaultValue={props.description}
               ref={descriptionRef}
             />
           </div>
@@ -112,7 +113,7 @@ export default function ExpenseForm(props) {
               className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
               name=""
               id="category"
-              defaultValue={categoryRef.current}
+              defaultValue={props.category}
               ref={categoryRef}
             >
               <option value="" hidden>

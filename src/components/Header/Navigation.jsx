@@ -1,13 +1,16 @@
-import { useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../store/authSlice';
 
 import menuBars from '../../assets/menuBars.svg';
 import xMark from '../../assets/xMark.svg';
 
-import AuthContext from '../../context/AuthContext';
-
 export default function Navigation() {
-  const authCtx = useContext(AuthContext);
+  const loggedIn = useSelector((state) => state.authState.loggedIn);
+
+  const dispatch = useDispatch();
+
   const history = useHistory();
 
   return (
@@ -15,7 +18,7 @@ export default function Navigation() {
       <nav className="flex justify-between items-center p-5 bg-gray-50 shadow-md fixed w-full top-0">
         <span className=" font-semibold text-2xl">Expense Tracker</span>
 
-        {authCtx.loggedIn && (
+        {loggedIn && (
           <div className="flex gap-4">
             <Link
               className="hidden sm:block font-medium border rounded px-2 py-[3px] hover:bg-gray-200"
@@ -32,10 +35,10 @@ export default function Navigation() {
           </div>
         )}
 
-        {authCtx.loggedIn ? (
+        {loggedIn ? (
           <button
             className="hidden sm:block  bg-indigo-600 text-white py-1 px-2 rounded-md hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
-            onClick={() => authCtx.logout()}
+            onClick={() => dispatch(logout())}
           >
             Logout
           </button>
@@ -74,7 +77,7 @@ export default function Navigation() {
           </button>
         </div>
 
-        {authCtx.loggedIn && (
+        {loggedIn && (
           <div className="flex flex-col gap-1 m-2">
             <Link
               className="font-medium rounded p-1 hover:bg-gray-200"
@@ -98,11 +101,11 @@ export default function Navigation() {
         )}
 
         <div className="mt-2 text-white">
-          {authCtx.loggedIn ? (
+          {loggedIn ? (
             <button
               className="bg-indigo-600 py-1 px-2 rounded-md hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
               onClick={() => {
-                authCtx.logout();
+                dispatch(logout());
                 document.getElementById('hidden').classList.toggle('hidden');
               }}
             >

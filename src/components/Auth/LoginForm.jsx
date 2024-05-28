@@ -1,9 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useRef, useContext, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+
+import { useDispatch } from 'react-redux';
+import { login } from '../../store/authSlice';
+
 import axios from 'axios';
 
-import AuthContext from '../../context/AuthContext';
 import Modal from '../UI/Modal';
 import Loader from '../UI/Loader';
 
@@ -11,7 +14,7 @@ export default function LoginForm() {
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const authCtx = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const history = useHistory();
 
@@ -43,7 +46,12 @@ export default function LoginForm() {
         }
       )
       .then((response) => {
-        authCtx.login(response.data.idToken, response.data.displayName);
+        dispatch(
+          login({
+            jwtToken: response.data.idToken,
+            userName: response.data.displayName,
+          })
+        );
         history.replace('/profile');
       })
       .catch((error) => {

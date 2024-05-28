@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
+import { useState } from 'react';
 
 import trash from '../../assets/trash.svg';
 import edit from '../../assets/edit.svg';
 
 import ExpenseForm from './ExpenseForm';
-import { useState } from 'react';
 
 export default function ExpenseItems(props) {
   const [editExpense, setEditExpense] = useState(false);
@@ -18,7 +18,7 @@ export default function ExpenseItems(props) {
     );
 
     if (response.ok) {
-      props.onDeleteExpense(props.id);
+      props.onDeleteExpense(props.id, props.amount);
     }
   }
 
@@ -29,7 +29,7 @@ export default function ExpenseItems(props) {
 
   return (
     <>
-      <li className="w-full flex justify-between items-center border-b-4 border-b-stone-500 p-2 mb-2">
+      <li className="w-full flex justify-between items-center border-b-4 border-b-stone-500 p-2">
         <div className="w-24">
           <span className="font-semibold text-xl">{props.category}</span>
           <p className="ml-2 italic">{props.description}</p>
