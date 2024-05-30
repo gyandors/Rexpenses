@@ -1,4 +1,4 @@
-import styles from './DataLoader.module.css';
+import styles from './Style.module.css';
 
 export default function DataLoader() {
   return (

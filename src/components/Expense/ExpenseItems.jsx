@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 import trash from '../../assets/trash.svg';
-import edit from '../../assets/edit.svg';
+import { EditIcon } from '../../assets/Icons';
 
 import ExpenseForm from './ExpenseForm';
 
@@ -37,10 +37,10 @@ export default function ExpenseItems(props) {
         <span className="w-24 text-end">₹ {props.amount}.00</span>
         <div className=" text-end">
           <button className="p-2" onClick={() => setEditExpense(true)}>
-            <img src={edit} width={20} alt="edit icon" />
+            <EditIcon />
           </button>
           <button className="p-2" onClick={handleDelete}>
-            <img src={trash} width={17} alt="delete icon" />
+            <img src={trash} alt="delete icon" />
           </button>
         </div>
       </li>

@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import styles from './Style.module.css';
 import { createPortal } from 'react-dom';
 
 export default function Modal(props) {
@@ -6,18 +7,24 @@ export default function Modal(props) {
     <>
       {createPortal(
         <div
-          className="h-screen w-screen fixed bg-black bg-opacity-20 z-10 transition-opacity"
+          className="h-screen w-screen fixed bg-black bg-opacity-20 z-[100] transition-opacity"
           onClick={() => props.onClick()}
         ></div>,
         document.getElementById('overlay')
       )}
       {createPortal(
-        <div className="p-4 bg-white rounded-md w-[80%] sm:w-[25rem] fixed z-[100] left-2/4 top-1/4 -translate-x-2/4 overflow-hidden">
+        <div
+          className={`${styles['custom-style']} p-4 bg-white rounded-md w-[80%] sm:w-[25rem] fixed z-[1000] left-2/4 top-1/4 -translate-x-2/4 overflow-hidden dark:bg-slate-600`}
+        >
           <header className="font-semibold">
-            <h1 className=" text-base text-gray-900">{props.title}</h1>
+            <h1 className=" text-base text-gray-900 dark:text-white">
+              {props.title}
+            </h1>
           </header>
           <section className="mt-3">
-            <p className=" text-sm text-gray-600">{props.message}</p>
+            <p className=" text-sm text-gray-600 dark:text-white">
+              {props.message}
+            </p>
           </section>
           <footer className="mt-3 text-right">
             <button

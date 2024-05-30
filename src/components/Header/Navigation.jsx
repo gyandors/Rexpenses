@@ -2,9 +2,9 @@ import { useHistory, Link } from 'react-router-dom';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/authSlice';
+import { setProMember } from '../../store/userSlice';
 
-import menuBars from '../../assets/menuBars.svg';
-import xMark from '../../assets/xMark.svg';
+import { MenuBarIcon, XmarkIcon } from '../../assets/Icons';
 
 export default function Navigation() {
   const loggedIn = useSelector((state) => state.authState.loggedIn);
@@ -15,19 +15,19 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className="flex justify-between items-center p-5 bg-gray-50 shadow-md fixed w-full top-0">
+      <nav className="flex justify-between items-center p-5 bg-gray-50 shadow-md fixed w-full top-0  dark:bg-slate-900 dark:text-white">
         <span className=" font-semibold text-2xl">Expense Tracker</span>
 
         {loggedIn && (
           <div className="flex gap-4">
             <Link
-              className="hidden sm:block font-medium border rounded px-2 py-[3px] hover:bg-gray-200"
+              className="hidden sm:block font-medium border rounded px-2 py-[3px] hover:bg-gray-200 dark:hover:text-black"
               to="/profile"
             >
               Profile
             </Link>
             <Link
-              className="hidden sm:block font-medium border rounded px-2 py-[3px] hover:bg-gray-200"
+              className="hidden sm:block font-medium border rounded px-2 py-[3px] hover:bg-gray-200 dark:hover:text-black"
               to="/expenses"
             >
               Expenses
@@ -38,7 +38,10 @@ export default function Navigation() {
         {loggedIn ? (
           <button
             className="hidden sm:block  bg-indigo-600 text-white py-1 px-2 rounded-md hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
-            onClick={() => dispatch(logout())}
+            onClick={() => {
+              dispatch(logout());
+              dispatch(setProMember());
+            }}
           >
             Logout
           </button>
@@ -57,13 +60,13 @@ export default function Navigation() {
             document.getElementById('hidden').classList.toggle('hidden');
           }}
         >
-          <img src={menuBars} width={20} alt="menu" />
+          <MenuBarIcon />
         </button>
       </nav>
 
       {/* Navbar for mobile screens */}
       <div
-        className="hidden sm:hidden fixed top-0 w-full bg-gray-50 p-5 shadow-md"
+        className="hidden sm:hidden fixed top-0 w-full bg-gray-50 p-5 shadow-md dark:bg-slate-900 dark:text-white"
         id="hidden"
       >
         <div className="flex justify-between items-center">
@@ -73,14 +76,14 @@ export default function Navigation() {
               document.getElementById('hidden').classList.toggle('hidden');
             }}
           >
-            <img src={xMark} width={20} alt="menu" />
+            <XmarkIcon />
           </button>
         </div>
 
         {loggedIn && (
           <div className="flex flex-col gap-1 m-2">
             <Link
-              className="font-medium rounded p-1 hover:bg-gray-200"
+              className="font-medium rounded p-1 hover:bg-gray-200 dark:hover:text-black"
               to="/profile"
               onClick={() => {
                 document.getElementById('hidden').classList.toggle('hidden');
@@ -89,7 +92,7 @@ export default function Navigation() {
               Profile
             </Link>
             <Link
-              className="font-medium rounded p-1 hover:bg-gray-200"
+              className="font-medium rounded p-1 hover:bg-gray-200 dark:hover:text-black"
               to="/expenses"
               onClick={() => {
                 document.getElementById('hidden').classList.toggle('hidden');
@@ -106,6 +109,7 @@ export default function Navigation() {
               className="bg-indigo-600 py-1 px-2 rounded-md hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
               onClick={() => {
                 dispatch(logout());
+                dispatch(setProMember());
                 document.getElementById('hidden').classList.toggle('hidden');
               }}
             >

@@ -7,18 +7,25 @@ import {
   editExpense,
   deleteExpense,
 } from '../../store/expenseSlice';
+import { setProMember, setTheme } from '../../store/userSlice';
 
 import ExpenseItems from './ExpenseItems';
 import ExpenseForm from './ExpenseForm';
 import DataLoader from '../UI/DataLoader';
 import Modal from '../UI/Modal';
-import premium from '../../assets/premium.png';
+
+import premium from '../../assets/premium.svg';
+import { LightModeIcon, DarkModeIcon, DownloadIcon } from '../../assets/Icons';
 
 export default function Expense() {
   const expenses = useSelector((state) => state.expenseState.expenses);
   const totalExpenseAmount = useSelector(
     (state) => state.expenseState.totalExpenseAmount
   );
+
+  const proMember = useSelector((state) => state.userState.proMember);
+  const theme = useSelector((state) => state.userState.theme);
+
   const dispatch = useDispatch();
 
   const [showForm, setShowForm] = useState(false);
@@ -112,7 +119,7 @@ export default function Expense() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center gap-5">
+    <div className="flex flex-col justify-center items-center gap-5 dark:text-white">
       {!showForm && (
         <button
           className="mt-10 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -127,18 +134,54 @@ export default function Expense() {
           onAddExpense={handleAddExpense}
         />
       )}
-      <div className="w-11/12 sm:max-w-3xl flex justify-between">
+      <div className="w-11/12 sm:max-w-3xl flex justify-between items-center">
         <div>
           <h1 className="inline">Total Expense: </h1>
           <span className="font-semibold text-lg">{totalExpenseAmount}</span>
         </div>
         {totalExpenseAmount > 10000 && (
-          <button className="rounded border-2 border-indigo-600 px-2 py-1 flex items-center gap-1 hover:bg-indigo-600 hover:text-white">
+          <button
+            className="rounded border-2 border-indigo-600 px-2 py-1 flex items-center gap-1 hover:bg-indigo-600 hover:text-white"
+            onClick={() => dispatch(setProMember())}
+          >
             <img className="inline" src={premium} alt="..." width={20} />
-            <span>Activate Pro</span>
+            <span>{proMember ? 'Deactivate Pro' : 'Activate Pro'}</span>
           </button>
         )}
       </div>
+      {proMember && (
+        <div className="w-11/12 sm:max-w-3xl bg-gray-400 p-1 rounded-md flex">
+          <button
+            onClick={() => {
+              dispatch(setTheme());
+            }}
+          >
+            {theme ? <LightModeIcon /> : <DarkModeIcon />}
+          </button>
+
+          <a
+            className="ml-10 cursor-pointer"
+            id="a1"
+            onClick={() => {
+              const expenseItem = expenses.map((e) => Object.values(e));
+              expenseItem.map((d) => d.shift());
+              expenseItem.unshift(['Amount', 'Description', 'Category']);
+
+              const expensesToDownload = expenseItem
+                .map((e) => e.join())
+                .join('\n');
+
+              const a1 = document.getElementById('a1');
+              const blob1 = new Blob([expensesToDownload]);
+              a1.href = URL.createObjectURL(blob1);
+            }}
+            download="expenses.csv"
+            target="_blank"
+          >
+            <DownloadIcon />
+          </a>
+        </div>
+      )}
 
       {content}
 

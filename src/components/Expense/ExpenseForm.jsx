@@ -61,7 +61,7 @@ export default function ExpenseForm(props) {
   return (
     <>
       <div className="mt-10">
-        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">
           {props.editExpense ? 'Edit Expense' : 'Add Expense'}
         </h2>
       </div>
@@ -70,7 +70,7 @@ export default function ExpenseForm(props) {
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           <div>
             <label
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
               htmlFor="price"
             >
               Amount
@@ -87,7 +87,7 @@ export default function ExpenseForm(props) {
 
           <div>
             <label
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
               htmlFor="description"
             >
               Description
@@ -104,7 +104,7 @@ export default function ExpenseForm(props) {
 
           <div>
             <label
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
               htmlFor="category"
             >
               Category

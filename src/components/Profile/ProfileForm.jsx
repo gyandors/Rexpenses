@@ -37,7 +37,10 @@ export default function ProfileForm(props) {
       onSubmit={handleFormSubmit}
     >
       <div className="mb-2">
-        <label className=" block text-sm font-semibold" htmlFor="name">
+        <label
+          className=" block text-sm font-semibold dark:text-white"
+          htmlFor="name"
+        >
           Full Name
         </label>
         <input
@@ -50,7 +53,10 @@ export default function ProfileForm(props) {
       </div>
 
       <div className="mb-2">
-        <label className="block text-sm font-semibold" htmlFor="photo">
+        <label
+          className="block text-sm font-semibold dark:text-white"
+          htmlFor="photo"
+        >
           Profile Photo URL
         </label>
         <input

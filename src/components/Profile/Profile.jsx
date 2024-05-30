@@ -115,7 +115,9 @@ export default function Profile() {
                   />
                 )}
               </div>
-              <h1 className="ml-2 text-3xl font-medium">{name}</h1>
+              <h1 className="ml-2 text-3xl font-medium dark:text-white">
+                {name}
+              </h1>
 
               {!editProfile ? (
                 <button
