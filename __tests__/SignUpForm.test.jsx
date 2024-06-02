@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 import SignUpForm from '../src/components/Auth/SignUpForm';
-import { describe } from 'vitest';
 
 const component = (
   <BrowserRouter>
