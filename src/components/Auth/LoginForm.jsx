@@ -1,14 +1,13 @@
-/* eslint-disable react/no-unescaped-entities */
-import { useRef, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useRef, useState } from "react";
+import { useHistory, Link } from "react-router-dom";
 
-import { useDispatch } from 'react-redux';
-import { login } from '../../store/authSlice';
+import { useDispatch } from "react-redux";
+import { login } from "../../store/authSlice";
 
-import axios from 'axios';
+import axios from "axios";
 
-import Modal from '../UI/Modal';
-import Loader from '../UI/Loader';
+import Modal from "../UI/Modal";
+import Loader from "../UI/Loader";
 
 export default function LoginForm() {
   const emailRef = useRef();
@@ -29,8 +28,8 @@ export default function LoginForm() {
 
     if (!email || !password) {
       setShowModal({
-        title: 'Invalid input',
-        message: 'Please fill the valid details.',
+        title: "Invalid input",
+        message: "Please fill the valid details.",
       });
       return;
     }
@@ -38,7 +37,7 @@ export default function LoginForm() {
     setLoader(true);
     axios
       .post(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ",
         {
           email: email,
           password: password,
@@ -49,29 +48,25 @@ export default function LoginForm() {
         dispatch(
           login({
             jwtToken: response.data.idToken,
-            userName: response.data.displayName,
+            name: response.data.displayName,
+            email: response.data.email,
+            uniqueId: response.data.localId,
           })
         );
-        history.replace('/profile');
+        history.replace("/dashboard");
       })
       .catch((error) => {
         console.error(error);
         setShowModal({
-          title: 'Login failed',
-          message: 'Invalid Credentials',
+          title: "Login failed",
+          message: "Invalid Credentials",
         });
         setLoader(false);
       });
   }
 
   return (
-    <div className="flex flex-col justify-center">
-      <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
-
+    <>
       <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           <div>
@@ -82,7 +77,7 @@ export default function LoginForm() {
               Email
             </label>
             <input
-              className="mt-2 px-2 py-1.5 w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              className="mt-2 px-2 py-1.5 w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
               type="email"
               id="email"
               placeholder="example@email.com"
@@ -100,13 +95,13 @@ export default function LoginForm() {
               </label>
               <Link
                 to="/forgot-password"
-                className="font-semibold text-sm text-indigo-600 hover:text-indigo-500"
+                className="font-semibold text-sm text-sky-500 hover:text-sky-600"
               >
                 Forgot password?
               </Link>
             </div>
             <input
-              className="mt-2 px-2 py-1.5 w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              className="mt-2 px-2 py-1.5 w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
               type="password"
               id="password"
               placeholder="******"
@@ -116,21 +111,21 @@ export default function LoginForm() {
 
           <div>
             <button
-              className="flex w-full justify-center items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center items-center rounded-md bg-sky-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
               type="submit"
             >
-              {loader ? <Loader /> : 'Sign in'}
+              {loader ? <Loader /> : "Sign in"}
             </button>
           </div>
         </form>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Don't have an account?{' '}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Don&apos;t have an account?{" "}
           <Link
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            className="font-semibold text-sky-500 hover:text-sky-600"
             to="/signup"
           >
-            Create here
+            Sign up
           </Link>
         </p>
       </div>
@@ -141,6 +136,6 @@ export default function LoginForm() {
           onClick={() => setShowModal(false)}
         />
       )}
-    </div>
+    </>
   );
 }

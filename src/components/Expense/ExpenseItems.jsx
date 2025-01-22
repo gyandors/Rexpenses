@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { useSelector } from 'react-redux';
 import { useState } from 'react';
 
 import trash from '../../assets/trash.svg';
@@ -9,14 +10,18 @@ import ExpenseForm from './ExpenseForm';
 export default function ExpenseItems(props) {
   const [editExpense, setEditExpense] = useState(false);
 
+  const { uniqueId } = useSelector((state) => state.authState.loggedInUser);
+
   async function handleDelete() {
     const response = await fetch(
-      `https://expense-tracker-17-default-rtdb.firebaseio.com/expenses/${props.id}.json`,
+      `https://expense-tracker-17-default-rtdb.firebaseio.com/${uniqueId}/expenses/${props.id}.json`,
       {
         method: 'DELETE',
       }
     );
 
+    const data = await response.json();
+    console.log(data);
     if (response.ok) {
       props.onDeleteExpense(props.id, props.amount);
     }

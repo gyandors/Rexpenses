@@ -1,23 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import {
   fetchedExpense,
   addExpense,
   editExpense,
   deleteExpense,
-} from '../../store/expenseSlice';
-import { setProMember, setTheme } from '../../store/userSlice';
+} from "../../store/expenseSlice";
+import { setProMember, setTheme } from "../../store/userSlice";
 
-import ExpenseItems from './ExpenseItems';
-import ExpenseForm from './ExpenseForm';
-import DataLoader from '../UI/DataLoader';
-import Modal from '../UI/Modal';
+import ExpenseItems from "./ExpenseItems";
+import ExpenseForm from "./ExpenseForm";
+import DataLoader from "../UI/DataLoader";
+import Modal from "../UI/Modal";
 
-import premium from '../../assets/premium.svg';
-import { LightModeIcon, DarkModeIcon, DownloadIcon } from '../../assets/Icons';
+import premium from "../../assets/premium.svg";
+import { LightModeIcon, DarkModeIcon, DownloadIcon } from "../../assets/Icons";
 
 export default function Expense() {
+  const { uniqueId } = useSelector((state) => state.authState.loggedInUser);
+
   const expenses = useSelector((state) => state.expenseState.expenses);
   const totalExpenseAmount = useSelector(
     (state) => state.expenseState.totalExpenseAmount
@@ -35,24 +37,24 @@ export default function Expense() {
   function handleAddExpense(newExpense) {
     dispatch(addExpense(newExpense));
     setShowModal({
-      title: 'Success',
-      message: 'Expense has been Added',
+      title: "Success",
+      message: "Expense has been Added",
     });
   }
 
   function handleEditExpense(editedExpense) {
     dispatch(editExpense(editedExpense));
     setShowModal({
-      title: 'Success',
-      message: 'Expense has been updated',
+      title: "Success",
+      message: "Expense has been updated",
     });
   }
 
   function handleDeleteExpense(delId, amount) {
     dispatch(deleteExpense({ delId, amount }));
     setShowModal({
-      title: 'Success',
-      message: 'Expense has been deleted',
+      title: "Success",
+      message: "Expense has been deleted",
     });
   }
 
@@ -60,7 +62,7 @@ export default function Expense() {
     async function fetchExpenses() {
       setDataLoader(true);
       const response = await fetch(
-        'https://expense-tracker-17-default-rtdb.firebaseio.com/expenses.json'
+        `https://expense-tracker-17-default-rtdb.firebaseio.com/${uniqueId}/expenses.json`
       );
 
       const data = await response.json();
@@ -80,12 +82,13 @@ export default function Expense() {
         }
         dispatch(fetchedExpense({ fetchedData, totalExpenseAmount }));
       } else {
-        alert('error');
+        alert("error");
       }
       setDataLoader(false);
     }
+
     fetchExpenses();
-  }, []);
+  }, [dispatch, uniqueId]);
 
   let content;
   {
@@ -145,7 +148,7 @@ export default function Expense() {
             onClick={() => dispatch(setProMember())}
           >
             <img className="inline" src={premium} alt="..." width={20} />
-            <span>{proMember ? 'Deactivate Pro' : 'Activate Pro'}</span>
+            <span>{proMember ? "Deactivate Pro" : "Activate Pro"}</span>
           </button>
         )}
       </div>
@@ -165,13 +168,13 @@ export default function Expense() {
             onClick={() => {
               const expenseItem = expenses.map((e) => Object.values(e));
               expenseItem.map((d) => d.shift());
-              expenseItem.unshift(['Amount', 'Description', 'Category']);
+              expenseItem.unshift(["Amount", "Description", "Category"]);
 
               const expensesToDownload = expenseItem
                 .map((e) => e.join())
-                .join('\n');
+                .join("\n");
 
-              const a1 = document.getElementById('a1');
+              const a1 = document.getElementById("a1");
               const blob1 = new Blob([expensesToDownload]);
               a1.href = URL.createObjectURL(blob1);
             }}

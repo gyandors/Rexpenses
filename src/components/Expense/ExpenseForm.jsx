@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useRef } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function ExpenseForm(props) {
   const amountRef = useRef();
   const descriptionRef = useRef();
   const categoryRef = useRef();
+
+  const { uniqueId } = useSelector((state) => state.authState.loggedInUser);
 
   function handleFormSubmit(event) {
     event.preventDefault();
@@ -23,7 +26,7 @@ export default function ExpenseForm(props) {
 
     async function postExpense() {
       const response = await fetch(
-        'https://expense-tracker-17-default-rtdb.firebaseio.com/expenses.json',
+        `https://expense-tracker-17-default-rtdb.firebaseio.com/${uniqueId}/expenses.json`,
         {
           method: 'POST',
           body: JSON.stringify(newExpense),
@@ -42,7 +45,7 @@ export default function ExpenseForm(props) {
 
     async function updateExpense() {
       const response = await fetch(
-        `https://expense-tracker-17-default-rtdb.firebaseio.com/expenses/${props.id}.json`,
+        `https://expense-tracker-17-default-rtdb.firebaseio.com/${uniqueId}/expenses/${props.id}.json`,
         {
           method: 'PUT',
           body: JSON.stringify(newExpense),

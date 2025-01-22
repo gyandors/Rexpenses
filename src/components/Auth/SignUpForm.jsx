@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
-import Modal from '../UI/Modal';
-import Loader from '../UI/Loader';
+import Modal from "../UI/Modal";
+import Loader from "../UI/Loader";
 
 export default function SignUpForm() {
   const emailRef = useRef();
@@ -21,16 +21,16 @@ export default function SignUpForm() {
 
     if (!email || !password || !confirmPassword) {
       setShowModal({
-        title: 'Invalid input',
-        message: 'Please fill the valid details.',
+        title: "Invalid input",
+        message: "Please fill the valid details.",
       });
       return;
     }
 
     if (password !== confirmPassword) {
       setShowModal({
-        title: 'Invalid input',
-        message: 'Password did not match.',
+        title: "Invalid input",
+        message: "Password did not match.",
       });
       return;
     }
@@ -39,16 +39,16 @@ export default function SignUpForm() {
       setLoader(true);
       try {
         const response = await fetch(
-          'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ",
           {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({
               email: email,
               password: password,
               returnSecureToken: true,
             }),
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           }
         );
@@ -57,13 +57,13 @@ export default function SignUpForm() {
 
         if (response.ok) {
           setShowModal({
-            title: 'Success',
-            message: 'Your account is successfully created. Go to login page.',
+            title: "Success",
+            message: "Your account is successfully created. Go to login page.",
           });
 
-          emailRef.current.value = '';
-          passwordRef.current.value = '';
-          confirmPasswordRef.current.value = '';
+          emailRef.current.value = "";
+          passwordRef.current.value = "";
+          confirmPasswordRef.current.value = "";
         } else {
           throw new Error(data.error.message);
         }
@@ -76,14 +76,9 @@ export default function SignUpForm() {
       setLoader(false);
     })();
   }
-  return (
-    <div className="flex flex-col justify-center">
-      <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Create new account
-        </h2>
-      </div>
 
+  return (
+    <>
       <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           <div>
@@ -94,7 +89,7 @@ export default function SignUpForm() {
               Email
             </label>
             <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
               type="email"
               id="email"
               placeholder="example@email.com"
@@ -110,7 +105,7 @@ export default function SignUpForm() {
               Password
             </label>
             <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
               type="password"
               id="password"
               placeholder="******"
@@ -126,7 +121,7 @@ export default function SignUpForm() {
               Confirm password
             </label>
             <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
               type="password"
               id="confm-password"
               placeholder="******"
@@ -136,21 +131,21 @@ export default function SignUpForm() {
 
           <div>
             <button
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-sky-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
               type="submit"
             >
-              {loader ? <Loader /> : 'Sign up'}
+              {loader ? <Loader /> : "Sign up"}
             </button>
           </div>
         </form>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Already have an account?{' '}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Already have an account?{" "}
           <Link
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            className="font-semibold text-sky-500 hover:text-sky-600"
             to="/login"
           >
-            Login here
+            Login
           </Link>
         </p>
       </div>
@@ -161,6 +156,6 @@ export default function SignUpForm() {
           onClick={() => setShowModal(false)}
         />
       )}
-    </div>
+    </>
   );
 }

@@ -53,7 +53,7 @@ export default function Profile() {
       console.log(error.message);
     }
     setDataLoader(false);
-  }, []);
+  }, [jwtToken]);
 
   useEffect(() => {
     fetchData();

@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
-import Modal from '../UI/Modal';
-import Loader from '../UI/Loader';
+import Modal from "../UI/Modal";
+import Loader from "../UI/Loader";
 
 export default function ForgotPasswordForm() {
   const emailRef = useRef();
@@ -17,11 +17,11 @@ export default function ForgotPasswordForm() {
       setLoader(true);
       try {
         const response = await fetch(
-          'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ',
+          "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ",
           {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({
-              requestType: 'PASSWORD_RESET',
+              requestType: "PASSWORD_RESET",
               email: emailRef.current.value,
             }),
           }
@@ -31,15 +31,15 @@ export default function ForgotPasswordForm() {
 
         if (response.ok) {
           setShowModal({
-            title: 'Success',
-            message: 'Password recovery link has been sent to your email.',
+            title: "Success",
+            message: "Password recovery link has been sent to your email.",
           });
         } else {
           throw new Error(data.error.message);
         }
       } catch (error) {
         setShowModal({
-          title: 'Invalid',
+          title: "Invalid",
           message: error.message,
         });
       }
@@ -48,13 +48,7 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="flex flex-col justify-center">
-      <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Forgot password
-        </h2>
-      </div>
-
+    <>
       <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           <div>
@@ -65,7 +59,7 @@ export default function ForgotPasswordForm() {
               Email
             </label>
             <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
               type="email"
               id="email"
               placeholder="example@email.com"
@@ -75,20 +69,20 @@ export default function ForgotPasswordForm() {
 
           <div>
             <button
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-sky-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
               type="submit"
             >
-              {loader ? <Loader /> : 'Send verification link'}
+              {loader ? <Loader /> : "Send verification link"}
             </button>
           </div>
         </form>
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Know your password?{' '}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Know your password?{" "}
           <Link
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            className="font-semibold text-sky-500 hover:text-sky-600"
             to="/login"
           >
-            Login here
+            Login
           </Link>
         </p>
       </div>
@@ -99,6 +93,6 @@ export default function ForgotPasswordForm() {
           onClick={() => setShowModal(false)}
         />
       )}
-    </div>
+    </>
   );
 }
