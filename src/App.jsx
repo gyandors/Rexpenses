@@ -1,25 +1,27 @@
 import { Route, Switch, Redirect } from "react-router-dom";
-import { useSelector } from "react-redux";
+
+import useAuthContext from "./context/AuthContext";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import DashboardLayout from "./layouts/DashboardLayout";
+import NotFoundPage from "./pages/NotFoundPage";
 
 import LandingPage from "./pages/LandingPage";
 
+import AuthLayout from "./layouts/AuthLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 
+import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import ExpensesPage from "./pages/ExpensesPage";
 import IncomesPage from "./pages/IncomesPage";
 import CategoriesPage from "./pages/CategoriesPage";
-import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
-  const loggedIn = useSelector((state) => state.authState.loggedIn);
+  const { loggedIn } = useAuthContext();
 
   return (
     <>
@@ -29,16 +31,23 @@ export default function App() {
           {!loggedIn ? <LandingPage /> : <Redirect to="/dashboard" />}
         </Route>
 
-        <Route path="/login">
-          {!loggedIn ? <LoginPage /> : <Redirect to="/dashboard" />}
-        </Route>
-
-        <Route path="/signup">
-          {!loggedIn ? <SignUpPage /> : <Redirect to="/dashboard" />}
-        </Route>
-
-        <Route path="/forgot-password">
-          {!loggedIn ? <ForgotPasswordPage /> : <Redirect to="/dashboard" />}
+        {/* Auth Routes */}
+        <Route path={["/login", "/signup", "/forgot-password"]}>
+          {!loggedIn ? (
+            <AuthLayout>
+              <Switch>
+                <Route path="/login" exact component={LoginPage} />
+                <Route path="/signup" exact component={SignUpPage} />
+                <Route
+                  path="/forgot-password"
+                  exact
+                  component={ForgotPasswordPage}
+                />
+              </Switch>
+            </AuthLayout>
+          ) : (
+            <Redirect to="/dashboard" />
+          )}
         </Route>
 
         {/* Dashboard Routes */}

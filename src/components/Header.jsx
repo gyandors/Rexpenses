@@ -1,44 +1,39 @@
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { FiLogOut, FiLogIn } from "react-icons/fi";
 
-import { logout } from "../store/authSlice";
-import { setProMember } from "../store/userSlice";
+import useAuthContext from "../context/AuthContext";
 
 export default function Header() {
-  const loggedIn = useSelector((state) => state.authState.loggedIn);
-  const dispatch = useDispatch();
+  const { logout, loggedIn } = useAuthContext();
 
   return (
-    <header>
-      <nav className="flex justify-between items-center p-5 bg-gray-50 shadow-md fixed z-50 w-full top-0 dark:bg-slate-900 dark:text-white">
+    <header className="fixed top-0 left-0 right-0 z-50">
+      <nav className="flex justify-between items-center px-4 lg:px-8 h-20 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          <Link to="/">
-            <img
-              src="/logo.png"
-              alt="Budget Buddy Logo"
-              className="w-10 h-10"
-            />
+          <Link to="/" className="flex items-center">
+            <img src="/logo.png" alt="Budget Buddy Logo" className="w-8 h-8" />
+            <span className="hidden md:block font-semibold text-xl ml-2 text-gray-900 dark:text-white">
+              Budget Buddy
+            </span>
           </Link>
-          <span className="font-semibold text-xl md:text-2xl">
-            Budget Buddy
-          </span>
         </div>
 
         {loggedIn ? (
-          <button
-            className="bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 "
-            onClick={() => {
-              dispatch(logout());
-              dispatch(setProMember());
-            }}
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => logout()}
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors"
+            >
+              <FiLogOut className="text-gray-500 dark:text-gray-400 size-5" />
+              Logout
+            </button>
+          </div>
         ) : (
           <Link
             to="/login"
-            className="bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 "
+            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors"
           >
+            <FiLogIn className="text-gray-500 dark:text-gray-400 size-5" />
             Login
           </Link>
         )}

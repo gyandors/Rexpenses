@@ -1,26 +1,26 @@
+import { FaEnvelope, FaLock } from "react-icons/fa6";
 import { useRef, useState } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-import { useDispatch } from "react-redux";
-import { login } from "../../store/authSlice";
-
-import axios from "axios";
-
+import useAuthContext from "../../context/AuthContext";
 import Modal from "../UI/Modal";
-import Loader from "../UI/Loader";
+import Label from "./UI/Label";
+import Input from "./UI/Input";
+import SubmitButton from "./UI/SubmitButton";
+import { auth } from "../../firebase";
 
 export default function LoginForm() {
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const dispatch = useDispatch();
-
   const history = useHistory();
 
   const [showModal, setShowModal] = useState(false);
-  const [loader, setLoader] = useState(false);
 
-  function handleFormSubmit(event) {
+  const { login, isLoading, setIsLoading } = useAuthContext();
+
+  async function handleFormSubmit(event) {
     event.preventDefault();
 
     const email = emailRef.current.value;
@@ -29,106 +29,86 @@ export default function LoginForm() {
     if (!email || !password) {
       setShowModal({
         title: "Invalid input",
-        message: "Please fill the valid details.",
+        message: "Please fill in all required fields.",
       });
       return;
     }
 
-    setLoader(true);
-    axios
-      .post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ",
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .then((response) => {
-        dispatch(
-          login({
-            jwtToken: response.data.idToken,
-            name: response.data.displayName,
-            email: response.data.email,
-            uniqueId: response.data.localId,
-          })
-        );
-        history.replace("/dashboard");
-      })
-      .catch((error) => {
-        console.error(error);
-        setShowModal({
-          title: "Login failed",
-          message: "Invalid Credentials",
-        });
-        setLoader(false);
+    setIsLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      login(userCredential.user);
+      history.replace("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      setShowModal({
+        title: "Login failed",
+        message: error.message,
       });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <>
-      <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
-        <form className="space-y-6" onSubmit={handleFormSubmit}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email
-            </label>
-            <input
-              className="mt-2 px-2 py-1.5 w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
-              type="email"
+      <form className="mt-8 space-y-6" onSubmit={handleFormSubmit}>
+        <div>
+          <Label htmlFor="email">Email address</Label>
+          <div className="relative mt-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaEnvelope className="text-gray-400" />
+            </div>
+
+            <Input
               id="email"
-              placeholder="example@email.com"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
               ref={emailRef}
             />
           </div>
+        </div>
 
-          <div>
-            <div className="flex justify-between items-center">
-              <label
-                htmlFor="password"
-                className="flex-grow text-sm font-medium leading-6 text-gray-900"
-              >
-                Password
-              </label>
-              <Link
-                to="/forgot-password"
-                className="font-semibold text-sm text-sky-500 hover:text-sky-600"
-              >
-                Forgot password?
-              </Link>
+        <div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link
+              to="/forgot-password"
+              className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <div className="relative mt-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaLock className="text-gray-400" />
             </div>
-            <input
-              className="mt-2 px-2 py-1.5 w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
-              type="password"
+            <Input
               id="password"
-              placeholder="******"
+              type="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
               ref={passwordRef}
             />
           </div>
+        </div>
 
-          <div>
-            <button
-              className="flex w-full justify-center items-center rounded-md bg-sky-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-              type="submit"
-            >
-              {loader ? <Loader /> : "Sign in"}
-            </button>
-          </div>
-        </form>
+        <div>
+          <SubmitButton
+            isLoading={isLoading}
+            label="Sign in"
+            loadingLabel="Signing in..."
+          />
+        </div>
+      </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Don&apos;t have an account?{" "}
-          <Link
-            className="font-semibold text-sky-500 hover:text-sky-600"
-            to="/signup"
-          >
-            Sign up
-          </Link>
-        </p>
-      </div>
       {showModal && (
         <Modal
           title={showModal.title}

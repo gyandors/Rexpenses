@@ -1,154 +1,155 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { FaEnvelope, FaLock, FaUser } from "react-icons/fa6";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useHistory } from "react-router-dom";
 
 import Modal from "../UI/Modal";
-import Loader from "../UI/Loader";
+import Label from "./UI/Label";
+import Input from "./UI/Input";
+import SubmitButton from "./UI/SubmitButton";
+import useAuthContext from "../../context/AuthContext";
+import { auth } from "../../firebase";
+import { createUser } from "../../utils/firebase";
 
 export default function SignUpForm() {
+  const nameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
 
-  const [showModal, setShowModal] = useState(false);
-  const [loader, setLoader] = useState(false);
+  const history = useHistory();
 
-  function handleFormSubmit(event) {
+  const { login, isLoading, setIsLoading } = useAuthContext();
+
+  const [showModal, setShowModal] = useState(false);
+
+  async function handleFormSubmit(event) {
     event.preventDefault();
 
+    const name = nameRef.current.value;
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     const confirmPassword = confirmPasswordRef.current.value;
 
-    if (!email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       setShowModal({
         title: "Invalid input",
-        message: "Please fill the valid details.",
+        message: "Please fill in all required fields.",
+      });
+      return;
+    } else if (password !== confirmPassword) {
+      setShowModal({
+        title: "Password mismatch",
+        message: "Passwords do not match. Please try again.",
       });
       return;
     }
 
-    if (password !== confirmPassword) {
-      setShowModal({
-        title: "Invalid input",
-        message: "Password did not match.",
+    setIsLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Update the user's display name
+      await updateProfile(userCredential.user, {
+        displayName: name,
       });
-      return;
+
+      await createUser(userCredential.user);
+
+      login(userCredential.user);
+      history.replace("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      setShowModal({
+        title: "Registration failed",
+        message: error.message,
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    (async function fetchData() {
-      setLoader(true);
-      try {
-        const response = await fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBg6MckZid33tefjT5QYDu_ZX5ly5OE3LQ",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: email,
-              password: password,
-              returnSecureToken: true,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setShowModal({
-            title: "Success",
-            message: "Your account is successfully created. Go to login page.",
-          });
-
-          emailRef.current.value = "";
-          passwordRef.current.value = "";
-          confirmPasswordRef.current.value = "";
-        } else {
-          throw new Error(data.error.message);
-        }
-      } catch (error) {
-        setShowModal({
-          // title: 'Error',
-          message: error.message,
-        });
-      }
-      setLoader(false);
-    })();
   }
 
   return (
     <>
-      <div className="w-11/12 mt-10 mx-auto sm:max-w-sm">
-        <form className="space-y-6" onSubmit={handleFormSubmit}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email
-            </label>
-            <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
-              type="email"
+      <form className="mt-8 space-y-6" onSubmit={handleFormSubmit}>
+        <div>
+          <Label htmlFor="name">Full Name</Label>
+          <div className="relative mt-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaUser className="text-gray-400" />
+            </div>
+            <Input
+              id="name"
+              type="text"
+              autoComplete="name"
+              placeholder="John Doe"
+              ref={nameRef}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="email">Email address</Label>
+          <div className="relative mt-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaEnvelope className="text-gray-400" />
+            </div>
+            <Input
               id="email"
-              placeholder="example@email.com"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
               ref={emailRef}
             />
           </div>
+        </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Password
-            </label>
-            <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
-              type="password"
+        <div>
+          <Label htmlFor="password">Password</Label>
+          <div className="relative mt-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaLock className="text-gray-400" />
+            </div>
+            <Input
               id="password"
-              placeholder="******"
+              type="password"
+              autoComplete="password"
+              placeholder="••••••••"
               ref={passwordRef}
             />
           </div>
+        </div>
 
-          <div>
-            <label
-              htmlFor="confm-password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Confirm password
-            </label>
-            <input
-              className="mt-2 px-2 py-1.5 block w-full rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
+        <div>
+          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <div className="relative mt-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <FaLock className="text-gray-400" />
+            </div>
+            <Input
+              id="confirm-password"
               type="password"
-              id="confm-password"
-              placeholder="******"
+              autoComplete="confirm-password"
+              placeholder="••••••••"
               ref={confirmPasswordRef}
             />
           </div>
+        </div>
 
-          <div>
-            <button
-              className="flex w-full justify-center rounded-md bg-sky-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-              type="submit"
-            >
-              {loader ? <Loader /> : "Sign up"}
-            </button>
-          </div>
-        </form>
+        <div>
+          <SubmitButton
+            isLoading={isLoading}
+            label="Sign up"
+            loadingLabel="Creating account..."
+          />
+        </div>
+      </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Already have an account?{" "}
-          <Link
-            className="font-semibold text-sky-500 hover:text-sky-600"
-            to="/login"
-          >
-            Login
-          </Link>
-        </p>
-      </div>
       {showModal && (
         <Modal
           title={showModal.title}

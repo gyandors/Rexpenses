@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export function useInView(options = {}) {
+export default function useInView(options = {}) {
   const [isInView, setIsInView] = useState(false);
   const ref = useRef(null);
 
