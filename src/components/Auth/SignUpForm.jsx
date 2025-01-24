@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import Modal from "../UI/Modal";
 import Label from "./UI/Label";
 import Input from "./UI/Input";
-import SubmitButton from "./UI/SubmitButton";
+import SubmitButton from "../UI/SubmitButton";
 import useAuthContext from "../../context/AuthContext";
 import { auth } from "../../firebase";
 import { createUser } from "../../utils/firebase";
@@ -146,6 +146,7 @@ export default function SignUpForm() {
             isLoading={isLoading}
             label="Sign up"
             loadingLabel="Creating account..."
+            className="w-full"
           />
         </div>
       </form>

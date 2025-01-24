@@ -26,9 +26,9 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="p-6">
+    <>
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center my-6">
         <h1 className="text-2xl font-bold">Categories</h1>
         <button
           onClick={() => setShowAddModal(true)}
@@ -161,6 +161,6 @@ export default function CategoriesPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

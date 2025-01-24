@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaPlus, FaSearch, FaFileExport } from "react-icons/fa";
-import AddTransactionModal from "../components/AddTransactionModal";
+import AddTransactionModal from "../components/UI/AddTransactionModal";
 
 export default function ExpensesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -29,9 +29,9 @@ export default function ExpensesPage() {
   ];
 
   return (
-    <div className="p-6">
+    <>
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center my-6">
         <h1 className="text-2xl font-bold">Expenses</h1>
         <div className="flex space-x-3">
           <button
@@ -134,6 +134,6 @@ export default function ExpensesPage() {
         onClose={() => setShowAddModal(false)}
         type="expense"
       />
-    </div>
+    </>
   );
 }

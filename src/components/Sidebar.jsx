@@ -19,7 +19,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 shadow-sm pt-20">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-white dark:bg-slate-800 shadow-sm pt-20">
         <div className="px-4 py-6">
           <nav className="space-y-1">
             {navLinks.map((link) => {
@@ -28,7 +28,7 @@ export default function Sidebar() {
                 <NavLink
                   key={link.path}
                   to={link.path}
-                  className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-700"
+                  className="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-slate-700"
                   activeClassName="bg-blue-50 text-blue-600 dark:bg-slate-700 dark:text-blue-400"
                   exact
                 >
@@ -42,7 +42,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 z-50">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700 z-50">
         <div className="flex justify-around items-center">
           {navLinks.map((link) => {
             const Icon = link.icon;
@@ -50,7 +50,7 @@ export default function Sidebar() {
               <NavLink
                 key={link.path}
                 to={link.path}
-                className="flex flex-col items-center py-3 px-2 text-gray-700 dark:text-gray-300"
+                className="flex flex-col items-center py-3 px-2 active:bg-blue-50 dark:text-gray-300"
                 activeClassName="text-blue-600 dark:text-blue-400"
                 exact
               >

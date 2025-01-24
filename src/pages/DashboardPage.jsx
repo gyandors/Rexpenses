@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaPlus, FaArrowUp, FaArrowDown } from "react-icons/fa6";
-import AddTransactionModal from "../components/AddTransactionModal";
+import AddTransactionModal from "../components/UI/AddTransactionModal";
 
 export default function DashboardPage() {
   const [showAddTransaction, setShowAddTransaction] = useState(false);
@@ -33,9 +33,9 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
       {/* Top Stats */}
-      <h1 className="text-2xl font-bold">Welcome to the Dashboard, Sachin</h1>
+      <h1 className="my-6 text-2xl font-bold">Welcome Back, Sachin</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm">
           <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
@@ -99,14 +99,6 @@ export default function DashboardPage() {
           </p>
         </div>
       </div>
-
-      {/* Quick Add Button */}
-      <button
-        onClick={() => setShowAddTransaction(true)}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
-      >
-        <FaPlus className="text-xl" />
-      </button>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -184,11 +176,19 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Quick Add Button */}
+      <button
+        onClick={() => setShowAddTransaction(true)}
+        className="fixed bottom-20 lg:bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+      >
+        <FaPlus className="text-xl" />
+      </button>
+
       {/* Replace the old modal with the new component */}
       <AddTransactionModal
         isOpen={showAddTransaction}
         onClose={() => setShowAddTransaction(false)}
       />
-    </div>
+    </>
   );
 }

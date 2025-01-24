@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaPlus, FaSearch, FaFileExport } from "react-icons/fa";
-import AddTransactionModal from "../components/AddTransactionModal";
+import AddTransactionModal from "../components/UI/AddTransactionModal";
 
 export default function IncomesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -25,13 +25,12 @@ export default function IncomesPage() {
       date: "2024-03-10",
       notes: "Website development",
     },
-    // Add more income items...
   ];
 
   return (
-    <div className="p-6">
+    <>
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center my-6">
         <h1 className="text-2xl font-bold">Incomes</h1>
         <div className="flex space-x-3">
           <button
@@ -134,6 +133,6 @@ export default function IncomesPage() {
         onClose={() => setShowAddModal(false)}
         type="income"
       />
-    </div>
+    </>
   );
 }

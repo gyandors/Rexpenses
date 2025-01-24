@@ -10,7 +10,6 @@ export default function AuthProvider({ children }) {
   const loggedIn = !!accessToken;
 
   function login(user) {
-    console.log(user);
     setAccessToken(user.accessToken);
     localStorage.setItem("accessToken", user.accessToken);
   }

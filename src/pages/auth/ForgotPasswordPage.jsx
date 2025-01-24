@@ -6,7 +6,7 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import Modal from "../../components/UI/Modal";
 import Label from "../../components/Auth/UI/Label";
 import Input from "../../components/Auth/UI/Input";
-import SubmitButton from "../../components/Auth/UI/SubmitButton";
+import SubmitButton from "../../components/UI/SubmitButton";
 
 import { auth } from "../../firebase";
 
@@ -103,6 +103,7 @@ export default function ForgotPasswordPage() {
                 isLoading={isLoading}
                 label="Send reset link"
                 loadingLabel="Sending reset link..."
+                className="w-full"
               />
             </div>
           </form>

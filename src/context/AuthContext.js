@@ -5,6 +5,8 @@ export const AuthContext = createContext({
   loggedIn: false,
   login: () => {},
   logout: () => {},
+  isLoading: false,
+  setIsLoading: () => {},
 });
 
 export default function useAuthContext() {

@@ -7,7 +7,7 @@ import useAuthContext from "../../context/AuthContext";
 import Modal from "../UI/Modal";
 import Label from "./UI/Label";
 import Input from "./UI/Input";
-import SubmitButton from "./UI/SubmitButton";
+import SubmitButton from "../UI/SubmitButton";
 import { auth } from "../../firebase";
 
 export default function LoginForm() {
@@ -105,6 +105,7 @@ export default function LoginForm() {
             isLoading={isLoading}
             label="Sign in"
             loadingLabel="Signing in..."
+            className="w-full"
           />
         </div>
       </form>

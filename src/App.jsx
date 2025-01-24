@@ -1,4 +1,5 @@
 import { Route, Switch, Redirect } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import useAuthContext from "./context/AuthContext";
 
@@ -25,6 +26,7 @@ export default function App() {
 
   return (
     <>
+      <Toaster position="top-center" toastOptions={{ duration: 5000 }} />
       <Header />
       <Switch>
         <Route path="/" exact>
@@ -65,10 +67,10 @@ export default function App() {
             <DashboardLayout>
               <Switch>
                 <Route path="/dashboard" exact component={DashboardPage} />
-                <Route path="/profile" exact component={ProfilePage} />
-                <Route path="/expenses" exact component={ExpensesPage} />
                 <Route path="/incomes" exact component={IncomesPage} />
+                <Route path="/expenses" exact component={ExpensesPage} />
                 <Route path="/categories" exact component={CategoriesPage} />
+                <Route path="/profile" exact component={ProfilePage} />
               </Switch>
             </DashboardLayout>
           ) : (

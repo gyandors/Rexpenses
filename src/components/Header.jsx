@@ -1,10 +1,24 @@
 import { Link } from "react-router-dom";
 import { FiLogOut, FiLogIn } from "react-icons/fi";
+import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
 
 import useAuthContext from "../context/AuthContext";
+import { auth } from "../firebase";
 
 export default function Header() {
   const { logout, loggedIn } = useAuthContext();
+
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+      logout();
+      toast.success("Logged out successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Failed to log out!");
+    }
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -21,7 +35,7 @@ export default function Header() {
         {loggedIn ? (
           <div className="flex items-center gap-4">
             <button
-              onClick={() => logout()}
+              onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors"
             >
               <FiLogOut className="text-gray-500 dark:text-gray-400 size-5" />

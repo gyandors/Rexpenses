@@ -24,6 +24,11 @@ export async function createUser(user) {
   });
 }
 
+/**
+ * Update a user in the database
+ * @param {User} user
+ * @returns {Promise<void>}
+ */
 export async function updateUser(user) {
   await updateDoc(doc(db, "users", user.uid), {
     name: user.displayName,
