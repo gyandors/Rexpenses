@@ -1,5 +1,14 @@
 import { useState } from "react";
 import { FaTimes, FaPlus } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { addDoc, collection } from "firebase/firestore";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+
+import AddCategoryModal from "./AddCategoryModal";
+import SubmitButton from "./SubmitButton";
+import { auth, db } from "../../firebase";
+import { addCategory, setLoading } from "../../reducers/expenseSlice";
 
 export default function AddTransactionModal({
   isOpen,
@@ -8,82 +17,95 @@ export default function AddTransactionModal({
 }) {
   const [activeTab, setActiveTab] = useState(type);
   const [showAddCategory, setShowAddCategory] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
 
-  // Placeholder for custom categories - replace with your state management
-  const [customExpenseCategories, setCustomExpenseCategories] = useState([]);
-  const [customIncomeCategories, setCustomIncomeCategories] = useState([]);
+  const { loading, categories } = useSelector((state) => state.expenseState);
+  const dispatch = useDispatch();
 
-  const handleAddCategory = (e) => {
+  const handleAddCategory = async (e) => {
     e.preventDefault();
-    if (!newCategory.trim()) return;
-
-    if (activeTab === "expense") {
-      setCustomExpenseCategories([
-        ...customExpenseCategories,
-        newCategory.trim(),
-      ]);
-    } else {
-      setCustomIncomeCategories([
-        ...customIncomeCategories,
-        newCategory.trim(),
-      ]);
+    if (e.target.name.value.trim() === "") {
+      toast.error("Category name is required");
+      return;
     }
 
-    setNewCategory("");
-    setShowAddCategory(false);
+    dispatch(setLoading(true));
+    try {
+      const category = {
+        name: e.target.name.value,
+        type: activeTab,
+        userId: auth.currentUser?.uid,
+      };
+
+      const docRef = await addDoc(collection(db, "categories"), category);
+      dispatch(addCategory({ ...category, id: docRef.id }));
+      toast.success("Category created successfully with id: " + docRef.id);
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong " + error.message);
+    } finally {
+      dispatch(setLoading(false));
+      setShowAddCategory(false);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add form submission logic here
     onClose();
   };
+
+  const filteredExpenseCategories = categories.filter(
+    (category) => category.type === "expense"
+  );
+  const filteredIncomeCategories = categories.filter(
+    (category) => category.type === "income"
+  );
 
   if (!isOpen) return null;
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md relative">
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            <FaTimes />
-          </button>
-
           {/* Tabs */}
-          <div className="flex space-x-4 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="space-x-4">
+              <button
+                className={`pb-2 px-1 font-medium text-sm ${
+                  activeTab === "expense"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 dark:text-gray-400"
+                }`}
+                onClick={() => setActiveTab("expense")}
+              >
+                Add Expense
+              </button>
+              <button
+                className={`pb-2 px-1 font-medium text-sm ${
+                  activeTab === "income"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 dark:text-gray-400"
+                }`}
+                onClick={() => setActiveTab("income")}
+              >
+                Add Income
+              </button>
+            </div>
             <button
-              className={`pb-2 px-1 font-medium text-sm ${
-                activeTab === "expense"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-              onClick={() => setActiveTab("expense")}
+              onClick={onClose}
+              className="text-gray-500 pb-2 px-1 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
-              Add Expense
-            </button>
-            <button
-              className={`pb-2 px-1 font-medium text-sm ${
-                activeTab === "income"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-              onClick={() => setActiveTab("income")}
-            >
-              Add Income
+              <FaTimes />
             </button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Title</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-400">
+                Title
+              </label>
               <input
                 type="text"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 px-3 py-2"
+                className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-200 px-3 py-2"
                 placeholder={`${
                   activeTab === "expense" ? "Expense" : "Income"
                 } title`}
@@ -92,14 +114,16 @@ export default function AddTransactionModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Amount</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-400">
+                Amount
+              </label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-gray-500">$</span>
+                <span className="absolute left-3 top-2 text-gray-500">₹</span>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 pl-7 pr-3 py-2"
+                  className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 pl-7 pr-3 py-2 dark:text-gray-200"
                   placeholder="0.00"
                   required
                 />
@@ -107,16 +131,18 @@ export default function AddTransactionModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Date</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-400">
+                Date
+              </label>
               <input
                 type="date"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 px-3 py-2"
+                className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 px-3 py-2 dark:text-gray-200"
                 required
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1 dark:text-gray-400">
                 <label className="block text-sm font-medium">Category</label>
                 <button
                   type="button"
@@ -128,46 +154,36 @@ export default function AddTransactionModal({
                 </button>
               </div>
               <select
-                className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 px-3 py-2"
+                className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 px-3 py-2 dark:text-gray-200"
                 required
               >
                 <option value="">Select category</option>
                 {activeTab === "expense" ? (
                   <>
-                    <option value="food">Food</option>
-                    <option value="transportation">Transportation</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="shopping">Shopping</option>
-                    {customExpenseCategories.map((category, index) => (
-                      <option key={index} value={category.toLowerCase()}>
-                        {category}
+                    {filteredExpenseCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
                       </option>
                     ))}
-                    <option value="other">Other</option>
                   </>
                 ) : (
                   <>
-                    <option value="salary">Salary</option>
-                    <option value="freelance">Freelance</option>
-                    <option value="investments">Investments</option>
-                    {customIncomeCategories.map((category, index) => (
-                      <option key={index} value={category.toLowerCase()}>
-                        {category}
+                    {filteredIncomeCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
                       </option>
                     ))}
-                    <option value="other">Other</option>
                   </>
                 )}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1 dark:text-gray-400">
                 Notes (Optional)
               </label>
               <textarea
-                className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 px-3 py-2"
+                className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 px-3 py-2 dark:text-gray-200"
                 rows="3"
                 placeholder="Add any additional notes..."
               />
@@ -181,16 +197,16 @@ export default function AddTransactionModal({
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className={`px-4 py-2 text-sm font-medium text-white rounded-md ${
+              <SubmitButton
+                isLoading={loading}
+                label={activeTab === "expense" ? "Add Expense" : "Add Income"}
+                loadingLabel="Saving..."
+                className={`${
                   activeTab === "expense"
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-green-600 hover:bg-green-700"
                 }`}
-              >
-                {activeTab === "expense" ? "Add Expense" : "Add Income"}
-              </button>
+              />
             </div>
           </form>
         </div>
@@ -198,41 +214,12 @@ export default function AddTransactionModal({
 
       {/* Add Category Modal */}
       {showAddCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-sm">
-            <h3 className="text-lg font-medium mb-4">Add New Category</h3>
-            <form onSubmit={handleAddCategory}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">
-                  Category Name
-                </label>
-                <input
-                  type="text"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 px-3 py-2"
-                  placeholder="Enter category name"
-                  required
-                />
-              </div>
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddCategory(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-                >
-                  Add Category
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddCategoryModal
+          handleSubmit={handleAddCategory}
+          setShowAddModal={setShowAddCategory}
+          setEditingCategory={() => {}}
+          type={activeTab}
+        />
       )}
     </>
   );

@@ -40,7 +40,22 @@ export default function GoogleSignIn() {
 
   return (
     <div className="mt-6">
-      <div className="relative">
+      <button
+        onClick={handleGoogleSignIn}
+        disabled={isLoading}
+        className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-800 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+      >
+        {isLoading ? (
+          <FaSpinner className="h-5 w-5 animate-spin text-gray-600 dark:text-gray-400" />
+        ) : (
+          <FcGoogle className="h-5 w-5" />
+        )}
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {isLoading ? "Signing in..." : "Sign in with Google"}
+        </span>
+      </button>
+
+      <div className="relative mt-6">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-300 dark:border-gray-700" />
         </div>
@@ -51,22 +66,6 @@ export default function GoogleSignIn() {
         </div>
       </div>
 
-      <div className="mt-6">
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-800 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
-        >
-          {isLoading ? (
-            <FaSpinner className="h-5 w-5 animate-spin text-gray-600 dark:text-gray-400" />
-          ) : (
-            <FcGoogle className="h-5 w-5" />
-          )}
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {isLoading ? "Signing in..." : "Sign in with Google"}
-          </span>
-        </button>
-      </div>
       {showModal && (
         <Modal
           title={showModal.title}

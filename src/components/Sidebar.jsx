@@ -50,8 +50,8 @@ export default function Sidebar() {
               <NavLink
                 key={link.path}
                 to={link.path}
-                className="flex flex-col items-center py-3 px-2 active:bg-blue-50 dark:text-gray-300"
-                activeClassName="text-blue-600 dark:text-blue-400"
+                className="flex flex-col items-center py-3 px-2 dark:text-gray-300"
+                activeClassName="text-blue-600 dark:text-blue-600"
                 exact
               >
                 <Icon className="text-xl mb-1" />

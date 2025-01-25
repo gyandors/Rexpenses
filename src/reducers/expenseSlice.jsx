@@ -1,44 +1,46 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { expenses: [], totalExpenseAmount: 0 };
+const initialState = { loading: false, categories: [] };
 
 const expenseSlice = createSlice({
-  name: 'expense',
+  name: "expense",
   initialState,
   reducers: {
-    fetchedExpense(state, action) {
-      state.expenses = action.payload.fetchedData;
-      state.totalExpenseAmount = action.payload.totalExpenseAmount;
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
 
-    addExpense(state, action) {
-      state.expenses = [...state.expenses, action.payload];
-      state.totalExpenseAmount += action.payload.amount;
+    setCategories(state, action) {
+      state.categories = action.payload;
     },
 
-    editExpense(state, action) {
-      const updatedExpenses = state.expenses.map((e) => {
-        if (e.id === action.payload.id) {
-          state.totalExpenseAmount =
-            state.totalExpenseAmount - e.amount + action.payload.amount;
+    addCategory(state, action) {
+      state.categories = [...state.categories, action.payload];
+    },
+
+    deleteCategory(state, action) {
+      state.categories = state.categories.filter(
+        (c) => c.id !== action.payload
+      );
+    },
+
+    updateCategory(state, action) {
+      state.categories = state.categories.map((c) => {
+        if (c.id === action.payload.id) {
           return action.payload;
         }
-        return e;
+        return c;
       });
-      state.expenses = updatedExpenses;
-    },
-
-    deleteExpense(state, action) {
-      const updatedExpenses = state.expenses.filter((e) => {
-        return e.id !== action.payload.delId;
-      });
-      state.expenses = updatedExpenses;
-      state.totalExpenseAmount -= action.payload.amount;
     },
   },
 });
 
-export const { fetchedExpense, addExpense, editExpense, deleteExpense } =
-  expenseSlice.actions;
+export const {
+  setLoading,
+  setCategories,
+  addCategory,
+  deleteCategory,
+  updateCategory,
+} = expenseSlice.actions;
 
 export default expenseSlice.reducer;

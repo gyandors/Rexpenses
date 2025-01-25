@@ -58,7 +58,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <form className="mt-8 space-y-6" onSubmit={handleFormSubmit}>
+      <form className="mt-6 space-y-6" onSubmit={handleFormSubmit}>
         <div>
           <Label htmlFor="email">Email address</Label>
           <div className="relative mt-2">

@@ -1,26 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+
 import { AuthContext } from "./AuthContext";
+import { auth } from "../firebase";
 
 export default function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("accessToken")
-  );
+  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [loggedIn, setLoggedIn] = useState(!!user);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loggedIn = !!accessToken;
-
   function login(user) {
-    setAccessToken(user.accessToken);
-    localStorage.setItem("accessToken", user.accessToken);
+    const userData = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+    };
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setLoggedIn(true);
   }
 
   function logout() {
-    setAccessToken(null);
-    localStorage.removeItem("accessToken");
+    setUser(null);
+    localStorage.removeItem("user");
+    setLoggedIn(false);
   }
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        login(user);
+      } else {
+        logout();
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const authCtxValue = {
-    accessToken,
+    user,
     loggedIn,
     login,
     logout,

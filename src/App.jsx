@@ -1,5 +1,9 @@
 import { Route, Switch, Redirect } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { useDispatch } from "react-redux";
 
 import useAuthContext from "./context/AuthContext";
 
@@ -21,8 +25,43 @@ import ExpensesPage from "./pages/ExpensesPage";
 import IncomesPage from "./pages/IncomesPage";
 import CategoriesPage from "./pages/CategoriesPage";
 
+import { auth, db } from "./firebase";
+import { setCategories } from "./reducers/expenseSlice";
+
 export default function App() {
   const { loggedIn } = useAuthContext();
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "categories"));
+
+        const categories = querySnapshot.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id,
+          };
+        });
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const filteredCategories = categories.filter(
+              (c) => c.userId === user.uid
+            );
+
+            dispatch(setCategories(filteredCategories));
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong " + error.message);
+      }
+    };
+
+    loggedIn && fetchCategories();
+  }, [dispatch, loggedIn]);
 
   return (
     <>

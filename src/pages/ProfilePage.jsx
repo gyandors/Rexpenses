@@ -62,7 +62,9 @@ export default function ProfilePage() {
         <div className="pt-20 px-8 pb-8">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-2xl font-bold">{userData?.displayName}</h1>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                {userData?.displayName}
+              </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Member since{" "}
                 {new Date(
@@ -72,10 +74,10 @@ export default function ProfilePage() {
             </div>
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
+              className="flex items-center px-4 py-2 text-sm md:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
             >
               <FaEdit className="mr-2" />
-              Edit Profile
+              Edit
             </button>
           </div>
 
@@ -86,13 +88,15 @@ export default function ProfilePage() {
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Email
                   </h3>
-                  <p className="mt-1">{userData?.email}</p>
+                  <p className="mt-1 dark:text-gray-200">{userData?.email}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Phone Number
                   </h3>
-                  <p className="mt-1">{userData?.phoneNumber}</p>
+                  <p className="mt-1 dark:text-gray-200">
+                    {userData?.phoneNumber}
+                  </p>
                 </div>
               </div>
 
@@ -110,25 +114,25 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1 dark:text-gray-200">
                     Full Name
                   </label>
                   <input
                     type="text"
                     name="fullName"
                     defaultValue={userData?.displayName}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-600 dark:bg-slate-700"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-600 dark:bg-slate-700 dark:text-gray-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1 dark:text-gray-200">
                     Photo URL
                   </label>
                   <input
                     type="text"
                     name="photoURL"
                     defaultValue={userData?.photoURL}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-600 dark:bg-slate-700"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-600 dark:bg-slate-700 dark:text-gray-200"
                   />
                 </div>
               </div>
@@ -136,7 +140,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="px-4 py-2 text-sm md:text-base text-gray-700 hover:bg-gray-100 rounded-md dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>

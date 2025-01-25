@@ -76,7 +76,7 @@ export default function SignUpForm() {
 
   return (
     <>
-      <form className="mt-8 space-y-6" onSubmit={handleFormSubmit}>
+      <form className="mt-6 space-y-6" onSubmit={handleFormSubmit}>
         <div>
           <Label htmlFor="name">Full Name</Label>
           <div className="relative mt-2">

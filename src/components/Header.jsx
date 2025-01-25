@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 import useAuthContext from "../context/AuthContext";
 import { auth } from "../firebase";
+import DarkMode from "./UI/DarkMode";
 
 export default function Header() {
   const { logout, loggedIn } = useAuthContext();
@@ -32,8 +33,9 @@ export default function Header() {
           </Link>
         </div>
 
-        {loggedIn ? (
-          <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1 text-sm md:text-base">
+          <DarkMode />
+          {loggedIn ? (
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors"
@@ -41,16 +43,16 @@ export default function Header() {
               <FiLogOut className="text-gray-500 dark:text-gray-400 size-5" />
               Logout
             </button>
-          </div>
-        ) : (
-          <Link
-            to="/login"
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors"
-          >
-            <FiLogIn className="text-gray-500 dark:text-gray-400 size-5" />
-            Login
-          </Link>
-        )}
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors"
+            >
+              <FiLogIn className="text-gray-500 dark:text-gray-400 size-5" />
+              Login
+            </Link>
+          )}
+        </div>
       </nav>
     </header>
   );
