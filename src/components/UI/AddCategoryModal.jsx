@@ -9,7 +9,7 @@ export default function AddCategoryModal({
   setEditingCategory,
   type,
 }) {
-  const { loading } = useSelector((state) => state.expenseState);
+  const { loading } = useSelector((state) => state.categoryState);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

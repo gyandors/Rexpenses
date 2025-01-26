@@ -15,15 +15,16 @@ import {
   deleteCategory,
   setLoading,
   updateCategory,
-} from "../reducers/expenseSlice";
+} from "../reducers/categorySlice";
 import { auth, db } from "../firebase";
 import AddCategoryModal from "../components/UI/AddCategoryModal";
 import ExpenseCategories from "../components/Categories/ExpenseCategoies";
 import IncomeCategories from "../components/Categories/IncomeCategories";
+import { filterCategories } from "../utils/utilities";
 
 export default function CategoriesPage() {
   const dispatch = useDispatch();
-  const { categories } = useSelector((state) => state.expenseState);
+  const { categories } = useSelector((state) => state.categoryState);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -56,6 +57,7 @@ export default function CategoriesPage() {
         const category = {
           name: e.target.name.value,
           type: e.target.type.value,
+          createdAt: Date.now().toString(),
           userId: auth.currentUser?.uid,
         };
 
@@ -63,7 +65,7 @@ export default function CategoriesPage() {
 
         dispatch(addCategory({ ...category, id: docRef.id }));
 
-        toast.success("Category created successfully with id: " + docRef.id);
+        toast.success("Category added successfully");
       }
     } catch (error) {
       console.error(error);
@@ -86,12 +88,9 @@ export default function CategoriesPage() {
     }
   };
 
-  const filteredExpenseCategories = categories.filter(
-    (category) => category.type === "expense"
-  );
-  const filteredIncomeCategories = categories.filter(
-    (category) => category.type === "income"
-  );
+  const filteredExpenseCategories = filterCategories(categories, "expense");
+
+  const filteredIncomeCategories = filterCategories(categories, "income");
 
   return (
     <>

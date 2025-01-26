@@ -1,46 +1,43 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { loading: false, categories: [] };
+const initialState = { expenses: [], totalExpenses: 0 };
 
 const expenseSlice = createSlice({
   name: "expense",
   initialState,
   reducers: {
-    setLoading(state, action) {
-      state.loading = action.payload;
+    setExpenses(state, action) {
+      state.expenses = action.payload;
     },
 
-    setCategories(state, action) {
-      state.categories = action.payload;
+    setTotalExpenses(state, action) {
+      state.totalExpenses = action.payload;
     },
 
-    addCategory(state, action) {
-      state.categories = [...state.categories, action.payload];
+    addExpense(state, action) {
+      state.expenses = [...state.expenses, action.payload];
     },
 
-    deleteCategory(state, action) {
-      state.categories = state.categories.filter(
-        (c) => c.id !== action.payload
+    deleteExpense(state, action) {
+      state.expenses = state.expenses.filter(
+        (expense) => expense.id !== action.payload
       );
     },
 
-    updateCategory(state, action) {
-      state.categories = state.categories.map((c) => {
-        if (c.id === action.payload.id) {
-          return action.payload;
-        }
-        return c;
-      });
+    updateExpense(state, action) {
+      state.expenses = state.expenses.map((expense) =>
+        expense.id === action.payload.id ? action.payload : expense
+      );
     },
   },
 });
 
-export const {
-  setLoading,
-  setCategories,
-  addCategory,
-  deleteCategory,
-  updateCategory,
-} = expenseSlice.actions;
-
 export default expenseSlice.reducer;
+
+export const {
+  setExpenses,
+  setTotalExpenses,
+  addExpense,
+  deleteExpense,
+  updateExpense,
+} = expenseSlice.actions;

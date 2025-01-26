@@ -25,7 +25,11 @@ export default function TransactionTable({ transactions, type }) {
                 className="hover:bg-gray-50 dark:hover:bg-slate-700 text-sm md:text-base dark:text-white"
               >
                 <td className="p-4">
-                  {new Date(transaction.date).toLocaleDateString()}
+                  {new Date(transaction.date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </td>
                 <td className="p-4">{transaction.title}</td>
                 <td className="p-4">
@@ -48,7 +52,7 @@ export default function TransactionTable({ transactions, type }) {
                   }`}
                 >
                   {type === "expense" ? "-" : "+"}₹
-                  {transaction.amount.toFixed(2)}
+                  {Number(transaction.amount).toFixed(2)}
                 </td>
               </tr>
             ))

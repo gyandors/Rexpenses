@@ -4,38 +4,45 @@ import AddTransactionModal from "../components/UI/AddTransactionModal";
 import TransactionTable from "../components/Transactions/TransactionTable";
 import TransactionsHeader from "../components/Transactions/TransactionsHeader";
 import { useSelector } from "react-redux";
+import { filterCategories } from "../utils/utilities";
 
 export default function ExpensesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [sortOption, setSortOption] = useState("newest");
 
-  const { categories } = useSelector((state) => state.expenseState);
+  const { categories } = useSelector((state) => state.categoryState);
+  const { expenses } = useSelector((state) => state.expenseState);
 
-  // Placeholder data - replace with your actual data
-  const expenses = [
-    {
-      id: 1,
-      date: "2024-03-15",
-      title: "Grocery Shopping",
-      category: "Food",
-      notes: "Weekly groceries from Walmart Weekly groceries from Walmart",
-      amount: 156.32,
-    },
-    {
-      id: 2,
-      date: "2024-03-14",
-      title: "Netflix Subscription",
-      category: "Entertainment",
-      notes: "Monthly subscription",
-      amount: 15.99,
-    },
-    // Add more expense items...
-  ];
+  const expenseCategories = filterCategories(categories, "expense");
 
-  const filteredExpenseCategories = categories.filter(
-    (category) => category.type === "expense"
-  );
+  // Filter, search, and sort logic
+  const filteredExpenses = expenses
+    .filter((expense) => {
+      const matchesSearchQuery = expense.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedFilter === "all" ||
+        expense.category.toLowerCase() === selectedFilter;
+
+      return matchesSearchQuery && matchesCategory;
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "newest":
+          return new Date(b.date) - new Date(a.date);
+        case "oldest":
+          return new Date(a.date) - new Date(b.date);
+        case "highest":
+          return b.amount - a.amount;
+        case "lowest":
+          return a.amount - b.amount;
+        default:
+          return 0;
+      }
+    });
 
   return (
     <>
@@ -64,13 +71,17 @@ export default function ExpensesPage() {
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-slate-800"
           >
             <option value="all">All Categories</option>
-            {filteredExpenseCategories.map((category) => (
+            {expenseCategories.map((category) => (
               <option key={category.id} value={category.name.toLowerCase()}>
                 {category.name}
               </option>
             ))}
           </select>
-          <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-slate-800">
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-slate-800"
+          >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="highest">Highest Amount</option>
@@ -80,10 +91,10 @@ export default function ExpensesPage() {
       </div>
 
       {/* Expenses List */}
-      <TransactionTable transactions={expenses} type="expense" />
+      <TransactionTable transactions={filteredExpenses} type="expense" />
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-6">
+      {/* <div className="flex justify-between items-center mt-6">
         <div className="text-gray-500 dark:text-gray-400">
           Showing 1-10 of 50 expenses
         </div>
@@ -95,7 +106,7 @@ export default function ExpensesPage() {
             Next
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Add Expense Modal */}
       <AddTransactionModal

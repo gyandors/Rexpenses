@@ -4,37 +4,45 @@ import AddTransactionModal from "../components/UI/AddTransactionModal";
 import TransactionTable from "../components/Transactions/TransactionTable";
 import TransactionsHeader from "../components/Transactions/TransactionsHeader";
 import { useSelector } from "react-redux";
+import { filterCategories } from "../utils/utilities";
 
 export default function IncomesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [sortOption, setSortOption] = useState("newest");
 
-  const { categories } = useSelector((state) => state.expenseState);
+  const { categories } = useSelector((state) => state.categoryState);
+  const { incomes } = useSelector((state) => state.incomeState);
 
-  // Placeholder data - replace with your actual data
-  const incomes = [
-    {
-      id: 1,
-      title: "Monthly Salary",
-      amount: 5000.0,
-      category: "Salary",
-      date: "2024-03-01",
-      notes: "March salary",
-    },
-    {
-      id: 2,
-      title: "Freelance Project",
-      amount: 750.0,
-      category: "Freelance",
-      date: "2024-03-10",
-      notes: "Website development",
-    },
-  ];
+  const incomeCategories = filterCategories(categories, "income");
 
-  const filteredIncomeCategories = categories.filter(
-    (category) => category.type === "income"
-  );
+  // Filter, search, and sort logic
+  const filteredIncomes = incomes
+    .filter((income) => {
+      const matchesSearchQuery = income.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedFilter === "all" ||
+        income.category.toLowerCase() === selectedFilter;
+
+      return matchesSearchQuery && matchesCategory;
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "newest":
+          return new Date(b.date) - new Date(a.date);
+        case "oldest":
+          return new Date(a.date) - new Date(b.date);
+        case "highest":
+          return b.amount - a.amount;
+        case "lowest":
+          return a.amount - b.amount;
+        default:
+          return 0;
+      }
+    });
 
   return (
     <>
@@ -63,13 +71,17 @@ export default function IncomesPage() {
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-slate-800"
           >
             <option value="all">All Categories</option>
-            {filteredIncomeCategories.map((category) => (
+            {incomeCategories.map((category) => (
               <option key={category.id} value={category.name.toLowerCase()}>
                 {category.name}
               </option>
             ))}
           </select>
-          <select className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-slate-800">
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-slate-800"
+          >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="highest">Highest Amount</option>
@@ -79,10 +91,10 @@ export default function IncomesPage() {
       </div>
 
       {/* Incomes List */}
-      <TransactionTable transactions={incomes} type="income" />
+      <TransactionTable transactions={filteredIncomes} type="income" />
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-6">
+      {/* <div className="flex justify-between items-center mt-6">
         <div className="text-gray-500 dark:text-gray-400">
           Showing 1-10 of 50 incomes
         </div>
@@ -94,7 +106,7 @@ export default function IncomesPage() {
             Next
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Add Income Modal */}
       <AddTransactionModal

@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.side-nav-link {
+  @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:bg-slate-700;
+}
+
+.side-nav-link.selected {
+  @apply bg-blue-50 text-blue-500 dark:bg-slate-700 dark:text-blue-500;
+}
+
+.bottom-nav-link {
+  @apply flex flex-col items-center py-3 px-2 dark:text-gray-300;
+}
+
+.bottom-nav-link.selected {
+  @apply text-blue-500 dark:text-blue-500;
+}

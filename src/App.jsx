@@ -26,7 +26,9 @@ import IncomesPage from "./pages/IncomesPage";
 import CategoriesPage from "./pages/CategoriesPage";
 
 import { auth, db } from "./firebase";
-import { setCategories } from "./reducers/expenseSlice";
+import { setCategories } from "./reducers/categorySlice";
+import { setExpenses } from "./reducers/expenseSlice";
+import { setIncomes } from "./reducers/incomeSlice";
 
 export default function App() {
   const { loggedIn } = useAuthContext();
@@ -34,11 +36,29 @@ export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "categories"));
+        const categoriesQuerySnapshot = await getDocs(
+          collection(db, "categories")
+        );
+        const expensesQuerySnapshot = await getDocs(collection(db, "expenses"));
+        const incomesQuerySnapshot = await getDocs(collection(db, "incomes"));
 
-        const categories = querySnapshot.docs.map((doc) => {
+        const categories = categoriesQuerySnapshot.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id,
+          };
+        });
+
+        const expenses = expensesQuerySnapshot.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id,
+          };
+        });
+
+        const incomes = incomesQuerySnapshot.docs.map((doc) => {
           return {
             ...doc.data(),
             id: doc.id,
@@ -51,7 +71,17 @@ export default function App() {
               (c) => c.userId === user.uid
             );
 
+            const filteredExpenses = expenses.filter(
+              (e) => e.userId === user.uid
+            );
+
+            const filteredIncomes = incomes.filter(
+              (i) => i.userId === user.uid
+            );
+
             dispatch(setCategories(filteredCategories));
+            dispatch(setExpenses(filteredExpenses));
+            dispatch(setIncomes(filteredIncomes));
           }
         });
       } catch (error) {
@@ -60,7 +90,7 @@ export default function App() {
       }
     };
 
-    loggedIn && fetchCategories();
+    loggedIn && fetchData();
   }, [dispatch, loggedIn]);
 
   return (
