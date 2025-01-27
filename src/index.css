@@ -17,3 +17,30 @@
 .bottom-nav-link.selected {
   @apply text-blue-500 dark:text-blue-500;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.small-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 12px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: #cccccc;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #888888;
+  }
+}

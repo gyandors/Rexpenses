@@ -1,7 +1,7 @@
 import { Route, Switch, Redirect } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
 
@@ -31,12 +31,15 @@ import { setExpenses } from "./reducers/expenseSlice";
 import { setIncomes } from "./reducers/incomeSlice";
 
 export default function App() {
-  const { loggedIn } = useAuthContext();
+  const { loggedIn, setBudget } = useAuthContext();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const categoriesQuerySnapshot = await getDocs(
           collection(db, "categories")
@@ -65,6 +68,11 @@ export default function App() {
           };
         });
 
+        const docSnap = await getDoc(doc(db, "budget", auth.currentUser.uid));
+        if (docSnap.exists()) {
+          setBudget(Number(docSnap.data().budget) || 0);
+        }
+
         onAuthStateChanged(auth, (user) => {
           if (user) {
             const filteredCategories = categories.filter(
@@ -87,16 +95,18 @@ export default function App() {
       } catch (error) {
         console.error(error);
         toast.error("Something went wrong " + error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loggedIn && fetchData();
-  }, [dispatch, loggedIn]);
+  }, [dispatch, loggedIn, setBudget]);
 
   return (
     <>
       <Toaster position="top-center" toastOptions={{ duration: 5000 }} />
-      <Header />
+      <Header isLoading={isLoading} />
       <Switch>
         <Route path="/" exact>
           {!loggedIn ? <LandingPage /> : <Redirect to="/dashboard" />}
@@ -133,7 +143,7 @@ export default function App() {
           ]}
         >
           {loggedIn ? (
-            <DashboardLayout>
+            <DashboardLayout isLoading={isLoading}>
               <Switch>
                 <Route path="/dashboard" exact component={DashboardPage} />
                 <Route path="/incomes" exact component={IncomesPage} />

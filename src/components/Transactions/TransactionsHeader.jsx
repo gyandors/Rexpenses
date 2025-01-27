@@ -10,7 +10,7 @@ export default function TransactionsHeader({ title, type, setShowAddModal }) {
           className={`flex items-center px-4 py-2 text-sm md:text-base text-white rounded-lg transition-colors ${
             type === "income"
               ? "bg-green-600 hover:bg-green-500"
-              : "bg-blue-600 hover:bg-blue-500"
+              : "bg-red-600 hover:bg-red-500"
           }`}
         >
           <FaPlus className="mr-2" />

@@ -56,9 +56,17 @@ export default function AddTransactionModal({
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
+    if (
+      data.title.trim() === "" ||
+      data.amount.trim() === "" ||
+      data.category.trim() === "" ||
+      data.date.trim() === ""
+    ) {
+      toast.error("Please fill required fields");
+      return;
+    }
 
     dispatch(setLoading(true));
-
     try {
       if (activeTab === "expense") {
         const docRef = await addDoc(collection(db, "expenses"), {
@@ -231,8 +239,8 @@ export default function AddTransactionModal({
                 loadingLabel="Saving..."
                 className={`${
                   activeTab === "expense"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"
+                    ? "bg-red-600 hover:bg-red-500"
+                    : "bg-green-600 hover:bg-green-500"
                 }`}
               />
             </div>

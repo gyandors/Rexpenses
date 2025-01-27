@@ -8,6 +8,7 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(localStorage.getItem("user"));
   const [loggedIn, setLoggedIn] = useState(!!user);
   const [isLoading, setIsLoading] = useState(false);
+  const [budget, setBudget] = useState(1000);
 
   function login(user) {
     const userData = {
@@ -28,7 +29,7 @@ export default function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         login(user);
       } else {
@@ -46,6 +47,8 @@ export default function AuthProvider({ children }) {
     logout,
     isLoading,
     setIsLoading,
+    budget,
+    setBudget,
   };
 
   return (

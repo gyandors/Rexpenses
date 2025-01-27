@@ -7,6 +7,8 @@ export const AuthContext = createContext({
   logout: () => {},
   isLoading: false,
   setIsLoading: () => {},
+  budget: null,
+  setBudget: () => {},
 });
 
 export default function useAuthContext() {
