@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -9,21 +10,23 @@ import useAuthContext from "./context/AuthContext";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import NotFoundPage from "./pages/NotFoundPage";
+import LoadingSpinner from "./components/UI/LoadingSpinner";
 
-import LandingPage from "./pages/LandingPage";
-
-import AuthLayout from "./layouts/AuthLayout";
-import LoginPage from "./pages/auth/LoginPage";
-import SignUpPage from "./pages/auth/SignUpPage";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
-
-import DashboardLayout from "./layouts/DashboardLayout";
-import DashboardPage from "./pages/DashboardPage";
-import ProfilePage from "./pages/ProfilePage";
-import ExpensesPage from "./pages/ExpensesPage";
-import IncomesPage from "./pages/IncomesPage";
-import CategoriesPage from "./pages/CategoriesPage";
+// Lazy load components
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
+const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
+const SignUpPage = lazy(() => import("./pages/auth/SignUpPage"));
+const ForgotPasswordPage = lazy(() =>
+  import("./pages/auth/ForgotPasswordPage")
+);
+const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const ExpensesPage = lazy(() => import("./pages/ExpensesPage"));
+const IncomesPage = lazy(() => import("./pages/IncomesPage"));
+const CategoriesPage = lazy(() => import("./pages/CategoriesPage"));
 
 import { auth, db } from "./firebase";
 import { setCategories } from "./reducers/categorySlice";
@@ -107,60 +110,62 @@ export default function App() {
     <>
       <Toaster position="top-center" toastOptions={{ duration: 5000 }} />
       <Header isLoading={isLoading} />
-      <Switch>
-        <Route path="/" exact>
-          {!loggedIn ? <LandingPage /> : <Redirect to="/dashboard" />}
-        </Route>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Switch>
+          <Route path="/" exact>
+            {!loggedIn ? <LandingPage /> : <Redirect to="/dashboard" />}
+          </Route>
 
-        {/* Auth Routes */}
-        <Route path={["/login", "/signup", "/forgot-password"]}>
-          {!loggedIn ? (
-            <AuthLayout>
-              <Switch>
-                <Route path="/login" exact component={LoginPage} />
-                <Route path="/signup" exact component={SignUpPage} />
-                <Route
-                  path="/forgot-password"
-                  exact
-                  component={ForgotPasswordPage}
-                />
-              </Switch>
-            </AuthLayout>
-          ) : (
-            <Redirect to="/dashboard" />
-          )}
-        </Route>
+          {/* Auth Routes */}
+          <Route path={["/login", "/signup", "/forgot-password"]}>
+            {!loggedIn ? (
+              <AuthLayout>
+                <Switch>
+                  <Route path="/login" exact component={LoginPage} />
+                  <Route path="/signup" exact component={SignUpPage} />
+                  <Route
+                    path="/forgot-password"
+                    exact
+                    component={ForgotPasswordPage}
+                  />
+                </Switch>
+              </AuthLayout>
+            ) : (
+              <Redirect to="/dashboard" />
+            )}
+          </Route>
 
-        {/* Dashboard Routes */}
-        <Route
-          path={[
-            "/dashboard",
-            "/profile",
-            "/expenses",
-            "/incomes",
-            "/categories",
-            "/settings",
-          ]}
-        >
-          {loggedIn ? (
-            <DashboardLayout isLoading={isLoading}>
-              <Switch>
-                <Route path="/dashboard" exact component={DashboardPage} />
-                <Route path="/incomes" exact component={IncomesPage} />
-                <Route path="/expenses" exact component={ExpensesPage} />
-                <Route path="/categories" exact component={CategoriesPage} />
-                <Route path="/profile" exact component={ProfilePage} />
-              </Switch>
-            </DashboardLayout>
-          ) : (
-            <Redirect to="/login" />
-          )}
-        </Route>
+          {/* Dashboard Routes */}
+          <Route
+            path={[
+              "/dashboard",
+              "/profile",
+              "/expenses",
+              "/incomes",
+              "/categories",
+              "/settings",
+            ]}
+          >
+            {loggedIn ? (
+              <DashboardLayout isLoading={isLoading}>
+                <Switch>
+                  <Route path="/dashboard" exact component={DashboardPage} />
+                  <Route path="/incomes" exact component={IncomesPage} />
+                  <Route path="/expenses" exact component={ExpensesPage} />
+                  <Route path="/categories" exact component={CategoriesPage} />
+                  <Route path="/profile" exact component={ProfilePage} />
+                </Switch>
+              </DashboardLayout>
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
 
-        <Route>
-          <NotFoundPage />
-        </Route>
-      </Switch>
+          <Route>
+            <NotFoundPage />
+          </Route>
+        </Switch>
+      </Suspense>
       {!loggedIn && <Footer />}
     </>
   );

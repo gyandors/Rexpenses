@@ -50,6 +50,7 @@ export default function IncomesPage() {
         title="Incomes"
         type="income"
         setShowAddModal={setShowAddModal}
+        transactions={filteredIncomes}
       />
 
       {/* Filters and Search */}

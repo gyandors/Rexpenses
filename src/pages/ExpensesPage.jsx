@@ -50,6 +50,7 @@ export default function ExpensesPage() {
         title="Expenses"
         type="expense"
         setShowAddModal={setShowAddModal}
+        transactions={filteredExpenses}
       />
 
       {/* Filters and Search */}
