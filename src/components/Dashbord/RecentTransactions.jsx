@@ -1,11 +1,21 @@
 import { useSelector } from "react-redux";
 
-export default function RecentTransactions() {
+export default function RecentTransactions({ currentDate }) {
   const { expenses } = useSelector((state) => state.expenseState);
   const { incomes } = useSelector((state) => state.incomeState);
 
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
   // Combine and sort both expenses and incomes
   const recentTransactions = [...expenses, ...incomes]
+    .filter((transaction) => {
+      const transactionDate = new Date(transaction.date);
+      return (
+        transactionDate.getMonth() === currentMonth &&
+        transactionDate.getFullYear() === currentYear
+      );
+    })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 

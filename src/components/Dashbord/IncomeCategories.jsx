@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-export default function IncomeCategories() {
+export default function IncomeCategories({ currentDate }) {
   const { incomes } = useSelector((state) => state.incomeState);
 
   // Color mapping for different categories
@@ -14,8 +14,6 @@ export default function IncomeCategories() {
     Other: "bg-slate-600",
   };
 
-  // Set fixed date for testing (December 2024)
-  const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 

@@ -9,19 +9,23 @@ import IncomeCategories from "../components/Dashbord/IncomeCategories";
 
 export default function DashboardPage() {
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   return (
     <>
-      <BudgetOverview />
+      <BudgetOverview
+        currentDate={currentDate}
+        setCurrentDate={setCurrentDate}
+      />
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <RecentTransactions />
+        <RecentTransactions currentDate={currentDate} />
 
         {/* Expense Categories */}
         <div className="space-y-6">
-          <ExpenseCategories />
-          <IncomeCategories />
+          <ExpenseCategories currentDate={currentDate} />
+          <IncomeCategories currentDate={currentDate} />
         </div>
       </div>
 

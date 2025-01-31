@@ -6,10 +6,12 @@ import toast from "react-hot-toast";
 import { db } from "../../firebase";
 import { deleteExpense } from "../../reducers/expenseSlice";
 import { deleteIncome } from "../../reducers/incomeSlice";
+import AddTransactionModal from "../UI/AddTransactionModal";
 
 export default function TransactionTable({ transactions, type }) {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dispatch = useDispatch();
+  const [isEditingTransaction, setIsEditingTransaction] = useState(null);
 
   const handleDelete = async (id) => {
     try {
@@ -108,8 +110,11 @@ export default function TransactionTable({ transactions, type }) {
                   {activeDropdown === transaction.id && (
                     <div className="absolute right-12 -top-4 mt-2 w-20 rounded-md shadow-lg bg-white dark:bg-slate-700 ring-1 ring-black ring-opacity-5 z-10 overflow-hidden">
                       <button
-                        onClick={() => setActiveDropdown(null)}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-600"
+                        onClick={() => {
+                          setIsEditingTransaction(transaction);
+                          setActiveDropdown(null);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm border-b text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-600"
                       >
                         Edit
                       </button>
@@ -127,6 +132,14 @@ export default function TransactionTable({ transactions, type }) {
           )}
         </tbody>
       </table>
+      {isEditingTransaction && (
+        <AddTransactionModal
+          isOpen={isEditingTransaction}
+          transaction={isEditingTransaction}
+          onClose={() => setIsEditingTransaction(null)}
+          type={type}
+        />
+      )}
     </div>
   );
 }

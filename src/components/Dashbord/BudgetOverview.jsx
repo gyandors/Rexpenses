@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaPencil, FaSpinner } from "react-icons/fa6";
-import { FaSave } from "react-icons/fa";
+import { FaCalendarDay, FaSave } from "react-icons/fa";
 import { doc, setDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -8,8 +8,10 @@ import { useSelector } from "react-redux";
 import useAuthContext from "../../context/AuthContext";
 import { auth, db } from "../../firebase";
 
-export default function BudgetOverview() {
+export default function BudgetOverview({ currentDate, setCurrentDate }) {
   const [showEditBudget, setShowEditBudget] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const { expenses } = useSelector((state) => state.expenseState);
   const {
     budget: monthlyBudget,
@@ -20,7 +22,6 @@ export default function BudgetOverview() {
   } = useAuthContext();
   const budgetRef = useRef(monthlyBudget);
 
-  const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
@@ -59,12 +60,38 @@ export default function BudgetOverview() {
         <h1 className="text-xl md:text-2xl font-bold dark:text-white">
           Hi, {user.displayName}
         </h1>
-        <span className="text-gray-500 dark:text-gray-400 text-sm md:text-base">
-          {currentDate.toLocaleDateString("en-IN", {
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
+        <div className="relative">
+          <button
+            className="flex items-center gap-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
+            onClick={() => setShowDatePicker(!showDatePicker)}
+          >
+            <span className="text-gray-500 dark:text-gray-400 text-sm md:text-base">
+              {currentDate.toLocaleDateString("en-IN", {
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+            <FaCalendarDay className="text-lg" />
+          </button>
+          {showDatePicker && (
+            <input
+              type="month"
+              className="absolute top-8 right-0 px-2 py-1 border rounded-md bg-white dark:bg-slate-800 dark:text-white dark:border-gray-700"
+              value={`${currentYear}-${String(currentMonth + 1).padStart(
+                2,
+                "0"
+              )}`}
+              onChange={(e) => {
+                const [year, month] = e.target.value.split("-");
+                const newDate = new Date(currentDate);
+                newDate.setMonth(parseInt(month) - 1);
+                newDate.setFullYear(parseInt(year));
+                setCurrentDate(newDate);
+                setShowDatePicker(false);
+              }}
+            />
+          )}
+        </div>
       </div>
 
       {/* Budget Overview */}

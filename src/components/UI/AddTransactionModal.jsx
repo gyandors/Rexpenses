@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaTimes, FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
@@ -10,13 +10,14 @@ import SubmitButton from "./SubmitButton";
 import { auth, db } from "../../firebase";
 import { addCategory, setLoading } from "../../reducers/categorySlice";
 import { filterCategories } from "../../utils/utilities";
-import { addExpense } from "../../reducers/expenseSlice";
-import { addIncome } from "../../reducers/incomeSlice";
+import { addExpense, updateExpense } from "../../reducers/expenseSlice";
+import { addIncome, updateIncome } from "../../reducers/incomeSlice";
 
 export default function AddTransactionModal({
   isOpen,
   onClose,
   type = "expense",
+  transaction,
 }) {
   const [activeTab, setActiveTab] = useState(type);
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -69,19 +70,35 @@ export default function AddTransactionModal({
     dispatch(setLoading(true));
     try {
       if (activeTab === "expense") {
-        const docRef = await addDoc(collection(db, "expenses"), {
-          ...data,
-          userId: auth.currentUser?.uid,
-        });
-        dispatch(addExpense({ ...data, id: docRef.id }));
-        toast.success("Expense added successfully");
+        if (transaction) {
+          await updateDoc(doc(db, "expenses", transaction.id), {
+            ...data,
+          });
+          dispatch(updateExpense({ ...data, id: transaction.id }));
+          toast.success("Expense updated successfully");
+        } else {
+          const docRef = await addDoc(collection(db, "expenses"), {
+            ...data,
+            userId: auth.currentUser?.uid,
+          });
+          dispatch(addExpense({ ...data, id: docRef.id }));
+          toast.success("Expense added successfully");
+        }
       } else {
-        const docRef = await addDoc(collection(db, "incomes"), {
-          ...data,
-          userId: auth.currentUser?.uid,
-        });
-        dispatch(addIncome({ ...data, id: docRef.id }));
-        toast.success("Income added successfully");
+        if (transaction) {
+          await updateDoc(doc(db, "incomes", transaction.id), {
+            ...data,
+          });
+          dispatch(updateIncome({ ...data, id: transaction.id }));
+          toast.success("Income updated successfully");
+        } else {
+          const docRef = await addDoc(collection(db, "incomes"), {
+            ...data,
+            userId: auth.currentUser?.uid,
+          });
+          dispatch(addIncome({ ...data, id: docRef.id }));
+          toast.success("Income added successfully");
+        }
       }
     } catch (error) {
       console.error(error);
@@ -110,9 +127,11 @@ export default function AddTransactionModal({
                     : "text-gray-500 dark:text-gray-400"
                 }`}
                 onClick={() => setActiveTab("expense")}
+                disabled={transaction && type === "income"}
               >
-                Add Expense
+                {transaction ? "Edit" : "Add"} Expense
               </button>
+
               <button
                 className={`pb-2 px-1 font-medium text-sm ${
                   activeTab === "income"
@@ -120,8 +139,9 @@ export default function AddTransactionModal({
                     : "text-gray-500 dark:text-gray-400"
                 }`}
                 onClick={() => setActiveTab("income")}
+                disabled={transaction && type === "expense"}
               >
-                Add Income
+                {transaction ? "Edit" : "Add"} Income
               </button>
             </div>
             <button
@@ -141,6 +161,7 @@ export default function AddTransactionModal({
               <input
                 type="text"
                 name="title"
+                defaultValue={transaction?.title}
                 className="w-full rounded-md border border-gray-300 dark:border-gray-700 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-gray-200 px-3 py-2"
                 placeholder={`${
                   activeTab === "expense" ? "Expense" : "Income"
@@ -159,6 +180,7 @@ export default function AddTransactionModal({
                   step="0.01"
                   min="0"
                   name="amount"
+                  defaultValue={transaction?.amount}
                   className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 pl-7 pr-3 py-2 dark:text-gray-200"
                   placeholder="0.00"
                 />
@@ -172,6 +194,7 @@ export default function AddTransactionModal({
               <input
                 type="date"
                 name="date"
+                defaultValue={transaction?.date}
                 className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 px-3 py-2 dark:text-gray-200"
               />
             </div>
@@ -191,8 +214,10 @@ export default function AddTransactionModal({
               <select
                 name="category"
                 className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 px-3 py-2 dark:text-gray-200"
+                defaultValue={transaction?.category}
               >
                 <option value="">Select category</option>
+
                 {activeTab === "expense" ? (
                   <>
                     {expenseCategories.map((category) => (
@@ -222,6 +247,7 @@ export default function AddTransactionModal({
                 className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-slate-900 px-3 py-2 dark:text-gray-200"
                 rows="3"
                 placeholder="Add any additional notes..."
+                defaultValue={transaction?.notes}
               />
             </div>
 
@@ -235,8 +261,15 @@ export default function AddTransactionModal({
               </button>
               <SubmitButton
                 isLoading={loading}
-                label={activeTab === "expense" ? "Add Expense" : "Add Income"}
-                loadingLabel="Saving..."
+                label={
+                  activeTab === "expense"
+                    ? transaction
+                      ? "Update Expense"
+                      : "Add Expense"
+                    : transaction
+                    ? "Update Income"
+                    : "Add Income"
+                }
                 className={`${
                   activeTab === "expense"
                     ? "bg-red-600 hover:bg-red-500"

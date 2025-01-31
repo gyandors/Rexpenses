@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-export default function ExpenseCategories() {
+export default function ExpenseCategories({ currentDate }) {
   const { expenses } = useSelector((state) => state.expenseState);
 
   // Color mapping for different categories
@@ -15,8 +15,6 @@ export default function ExpenseCategories() {
     Other: "bg-gray-600",
   };
 
-  // Set fixed date for testing (December 2024)
-  const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
